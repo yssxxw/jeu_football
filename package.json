@@ -17,7 +17,8 @@
 		"test:e2e": "playwright test",
 		"valider-contenu": "tsx scripts/valider-contenu.ts",
 		"apercu": "tsx scripts/apercu-match.ts",
-		"figer-snapshot": "tsx scripts/figer-snapshot.ts"
+		"figer-snapshot": "tsx scripts/figer-snapshot.ts",
+		"simuler": "tsx scripts/simuler.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

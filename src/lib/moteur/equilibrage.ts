@@ -1,5 +1,40 @@
 // Toutes les constantes de docs/02-game-design.md, et elles n'existent qu'ici.
 // Ces valeurs sont normatives : un écart se corrige dans la doc, pas dans ce fichier.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// ÉCARTS RELEVÉS PAR LA SIMULATION (V0-9) — aucune valeur n'a été touchée
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// `npm run simuler` (10 000 parties par agent et par division) ne reproduit pas
+// la table des médianes de 02 §4. Trois constats, dans l'ordre d'importance :
+//
+// 1. La table ne dit pas à quelle division elle s'applique, et aucune division
+//    ne tient les quatre cibles à ±4. Les moins mauvaises sont la 6 et la 8,
+//    avec 16 points d'écart cumulé. Prises une par une, les cibles tombent à
+//    des divisions différentes : « aléatoire » en 0, « connaît le foot » en 8,
+//    « constant » en 0, « parfait, 2 chronos ratés » en 3.
+//
+// 2. Le dossier attend 12 points d'écart entre « connaît le foot » (72) et
+//    « constant » (84). On en mesure 3. La cause n'est pas le dControle : c'est
+//    que la constance plafonne pour tout le monde, y compris pour un agent qui
+//    joue parfaitement — voir le point 3. Baisser le dControle des options à
+//    `justesse: 0,7`, le seul levier que prescrit 02 §4, ferait descendre les
+//    deux profils ensemble sans jamais creuser l'écart.
+//
+// 3. Un agent qui choisit toujours l'option `justesse: 1` obtient 81 de
+//    constance, pas 100, et plafonne donc à 96 de note. Cinq couples
+//    d'incidents ont des bonnes réponses mutuellement incohérentes au sens de
+//    02 §2 — même famille, gravités à 1 d'écart, sévérités à 2 ou plus. Exemple :
+//    `tacle_dernier_defenseur` (rouge, gravité 5) et `tacle_semelle_touche`
+//    (jaune, gravité 4). Ce ne sont pas des incohérences d'arbitrage : ce sont
+//    deux situations différentes que la règle traite comme comparables parce
+//    qu'elle assimile la gravité à la similitude de l'action.
+//
+// Aucun de ces trois points ne se corrige sans toucher à une valeur normative
+// (règle de constance) ou à des gravités de contenu déjà écrites. Les deux
+// demandent un arbitrage. En attendant, les valeurs ci-dessous sont celles du
+// dossier, au chiffre près.
+// ─────────────────────────────────────────────────────────────────────────────
 
 import type { Division, Fenetre, Mention } from './types';
 
