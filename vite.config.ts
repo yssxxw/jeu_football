@@ -22,8 +22,6 @@ export default defineConfig({
 	],
 	test: {
 		expect: { requireAssertions: true },
-		// passWithNoTests : à retirer dès le premier test de V0-2.
-		passWithNoTests: true,
 		projects: [
 			{
 				extends: './vite.config.ts',
