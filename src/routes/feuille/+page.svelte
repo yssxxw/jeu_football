@@ -37,6 +37,9 @@
 	{#if resultat.matchArrete}
 		<p>Le match n'est pas allé au bout.</p>
 	{/if}
+	{#if resultat.horsClassement}
+		<p>SANS CHRONO — hors classement.</p>
+	{/if}
 	{#if partie.estMatchDuJour}
 		<p>Match du jour.</p>
 	{/if}

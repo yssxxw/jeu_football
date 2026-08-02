@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { dev } from '$app/environment';
 	import { partie } from '$lib/etat/partie.svelte';
+	import Chrono from '$lib/ui/Chrono.svelte';
 
 	onMount(() => {
 		// Arrivée directe sur /match sans partie en cours : on repart de l'accueil.
@@ -36,6 +37,15 @@
 
 	{#if partie.phase === 'incident' && partie.incidentCourant}
 		{@const programme = partie.incidentCourant}
+
+		{#if partie.chronoActif}
+			<Chrono
+				dureeMs={partie.chronoMs}
+				cle={partie.etat.index}
+				onExpiration={() => partie.decider(null)}
+			/>
+		{/if}
+
 		<p>
 			{programme.minute}' — {partie.match.domicile.abrege}
 			{partie.etat.buts.domicile} – {partie.etat.buts.exterieur}
@@ -55,8 +65,13 @@
 		</ul>
 	{:else if partie.incidentJoue && partie.optionJouee}
 		{@const programme = partie.incidentJoue}
+		{@const prise = partie.etat.decisions[partie.etat.decisions.length - 1]}
 		<p>{programme.minute}' — {partie.optionJouee.libelle}</p>
 		<p>{partie.optionJouee.consequence}</p>
+
+		{#if prise?.nonDecidee}
+			<p>Décision non prise. L'option par défaut a été appliquée.</p>
+		{/if}
 
 		{#if partie.etat.matchArrete}
 			<p>Le match est arrêté. Le contrôle est tombé à zéro.</p>

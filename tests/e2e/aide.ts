@@ -18,16 +18,23 @@ export async function jouerUnMatch(page: Page): Promise<void> {
 export async function jouerJusquALaFeuille(page: Page): Promise<void> {
 	// 12 incidents × 2 écrans, plus une marge.
 	for (let n = 0; n < 30; n++) {
+		if (/\/feuille$/.test(page.url())) break;
+
 		const option = page.locator('ul li button').first();
-		if ((await option.count()) > 0) {
+		const suivant = page.getByRole('button', { name: /Suivant|Feuille de match/ }).first();
+
+		// Entre deux phases, Svelte remplace tout le bloc : il existe un instant
+		// où ni les options ni le bouton ne sont dans le DOM. On attend donc
+		// qu'un des deux arrive plutôt que de conclure qu'il n'y a plus rien.
+		await expect(option.or(suivant).first()).toBeVisible();
+
+		if (await option.isVisible()) {
 			await option.click();
 			continue;
 		}
 
-		const suivant = page.getByRole('button', { name: /Suivant|Feuille de match/ }).first();
-		if ((await suivant.count()) === 0) break;
-
 		if (((await suivant.textContent()) ?? '').includes('Feuille de match')) {
+			// Ce clic déclenche une navigation : l'élément se détache pendant l'action.
 			await Promise.all([page.waitForURL(/\/feuille$/), suivant.click()]);
 			break;
 		}

@@ -70,7 +70,17 @@ export function profilPresse(
 	return 'neutre';
 }
 
-export function noter(etat: EtatPartie): Resultat {
+export interface OptionsNotation {
+	/**
+	 * Chrono actif pendant la partie. À false, le malus de non-décision est
+	 * retiré et le résultat est marqué hors classement : sans contrainte de
+	 * temps, la note n'est pas comparable à celle des autres (02 §8.1).
+	 */
+	chrono?: boolean;
+}
+
+export function noter(etat: EtatPartie, options: OptionsNotation = {}): Resultat {
+	const chrono = options.chrono ?? true;
 	const justesse = calculerJustesse(etat.decisions);
 	const incoherences = compterIncoherences(etat.decisions);
 	const constance = calculerConstance(incoherences);
@@ -81,7 +91,9 @@ export function noter(etat: EtatPartie): Resultat {
 		POIDS_NOTE.constance * constance;
 
 	// La VAR arrive en V0-10 : ses deux malus valent 0 tant qu'elle n'existe pas.
-	const malus = Math.min(MALUS.plafondNonDecisions, MALUS.parNonDecision * etat.nonDecidees);
+	const malus = chrono
+		? Math.min(MALUS.plafondNonDecisions, MALUS.parNonDecision * etat.nonDecidees)
+		: 0;
 
 	let note = Math.round(Math.min(100, Math.max(0, noteBrute - malus)));
 	if (etat.matchArrete) note = Math.min(note, PLAFOND_NOTE_MATCH_ARRETE);
@@ -98,6 +110,7 @@ export function noter(etat: EtatPartie): Resultat {
 		cartonsRouges: etat.decisions.filter((decision) => decision.severite >= 3).length,
 		nonDecidees: etat.nonDecidees,
 		matchArrete: etat.matchArrete,
+		horsClassement: !chrono,
 		buts: { ...etat.buts }
 	};
 }

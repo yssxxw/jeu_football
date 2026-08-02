@@ -66,10 +66,25 @@ class Partie {
 	readonly numeroIncident = $derived(this.etat === null ? 0 : this.etat.index + 1);
 	readonly nomDivision = $derived(TABLE_DIVISIONS[this.division]?.nom ?? '');
 
-	/** Chrono de l'incident courant, en secondes. Le chrono lui-même arrive en V0-8. */
-	readonly chronoS = $derived(
-		this.incidentCourant?.incident.chronoS ?? TABLE_DIVISIONS[this.division]?.chronoS ?? 6
+	/**
+	 * Division du match en cours, qui n'est pas celle du joueur pendant le match
+	 * du jour : celui-ci se joue en Ligue 1 pour tout le monde.
+	 */
+	readonly divisionEnCours = $derived(this.etat?.match.division ?? this.division);
+
+	/**
+	 * Durée du chrono de l'incident courant, en millisecondes. Celle de la
+	 * division, sauf quand l'incident porte la sienne — tacle_intro, le tutoriel
+	 * invisible, laisse 10 s pour lire (02 §9).
+	 */
+	readonly chronoMs = $derived(
+		(this.incidentCourant?.incident.chronoS ??
+			TABLE_DIVISIONS[this.divisionEnCours]?.chronoS ??
+			6) * 1000
 	);
+
+	/** Réglage « sans chrono » : retire l'anneau, le malus, et le classement. */
+	readonly chronoActif = $derived(this.sauvegarde.reglages.chrono);
 
 	/** Lecture unique au démarrage. Ne lance jamais, même sans stockage. */
 	initialiser(maintenant: Date, options: { mouvementReduit?: boolean } = {}): void {
@@ -150,7 +165,7 @@ class Partie {
 	private terminer(maintenant: Date): void {
 		if (this.etat === null || this.resultat !== null) return;
 		const etat = this.etat;
-		const resultat = noter(etat);
+		const resultat = noter(etat, { chrono: this.sauvegarde.reglages.chrono });
 		this.resultat = resultat;
 
 		const progression = this.sauvegarde.progression;

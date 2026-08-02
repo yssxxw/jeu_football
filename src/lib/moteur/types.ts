@@ -171,6 +171,8 @@ export interface Resultat {
 	cartonsRouges: number;
 	nonDecidees: number;
 	matchArrete: boolean;
+	/** Partie jouée sans chrono : exclue du classement, par honnêteté (02 §8.1). */
+	horsClassement: boolean;
 	buts: { domicile: number; exterieur: number };
 }
 

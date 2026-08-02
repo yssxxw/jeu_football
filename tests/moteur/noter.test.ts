@@ -255,6 +255,26 @@ describe('noter', () => {
 		expect(resultat.cartonsRouges).toBe(1);
 	});
 
+	it('classe la partie par défaut', () => {
+		expect(noter(etat({ decisions: douze(1, 2) })).horsClassement).toBe(false);
+	});
+
+	it('marque la partie hors classement quand le chrono est désactivé', () => {
+		const resultat = noter(etat({ decisions: douze(1, 2) }), { chrono: false });
+		expect(resultat.horsClassement).toBe(true);
+	});
+
+	it('retire le malus de non-décision quand le chrono est désactivé', () => {
+		const avec = noter(etat({ decisions: douze(1, 2), controle: 100, nonDecidees: 3 }), {
+			chrono: true
+		});
+		const sans = noter(etat({ decisions: douze(1, 2), controle: 100, nonDecidees: 3 }), {
+			chrono: false
+		});
+		expect(sans.note - avec.note).toBe(9);
+		expect(sans.note).toBe(100);
+	});
+
 	it('pondère justesse, contrôle et constance selon 0,55 / 0,25 / 0,20', () => {
 		// Justesse 100, contrôle 0, constance 100 → 0,55×100 + 0,25×0 + 0,20×100 = 75
 		const resultat = noter(etat({ decisions: douze(1, 2), controle: 0 }));

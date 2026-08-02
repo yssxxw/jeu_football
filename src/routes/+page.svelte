@@ -52,6 +52,18 @@
 	<p>
 		<button onclick={matchDuJour}>le match du jour</button>
 	</p>
+
+	<p>
+		<label>
+			<input
+				type="checkbox"
+				checked={!partie.chronoActif}
+				onchange={(evenement) =>
+					partie.changerReglage('chrono', !evenement.currentTarget.checked, new Date())}
+			/>
+			Jouer sans chrono. Les parties sans chrono ne sont pas classées.
+		</label>
+	</p>
 {:else}
 	<p>Composition du match.</p>
 {/if}
