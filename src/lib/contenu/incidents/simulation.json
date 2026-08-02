@@ -30,7 +30,8 @@
 				"severite": 1,
 				"justesse": 0,
 				"dControle": -18,
-				"consequence": "Vous sifflez. Le défenseur ne dit rien du tout, ce qui est pire que s'il criait."
+				"consequence": "Vous sifflez. Le défenseur ne dit rien du tout, ce qui est pire que s'il criait.",
+				"penalty": true
 			},
 			{
 				"libelle": "Avertissement pour simulation",

@@ -237,14 +237,16 @@
 				"severite": 1,
 				"justesse": 0.4,
 				"dControle": -8,
-				"consequence": "Vous pointez le point. Transformé (76 %). Pontérive ne vous adressera plus la parole du match."
+				"consequence": "Vous pointez le point. Transformé (76 %). Pontérive ne vous adressera plus la parole du match.",
+				"penalty": true
 			},
 			{
 				"libelle": "Penalty et avertissement pour l'attaquant",
 				"severite": 2,
 				"justesse": 0,
 				"dControle": -20,
-				"consequence": "Vous sifflez penalty puis vous avertissez celui qui l'a obtenu. Plus personne ne sait ce que vous avez vu."
+				"consequence": "Vous sifflez penalty puis vous avertissez celui qui l'a obtenu. Plus personne ne sait ce que vous avez vu.",
+				"penalty": true
 			}
 		],
 		"var": {

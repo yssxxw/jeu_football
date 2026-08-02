@@ -27,7 +27,8 @@ export interface Option {
 	dControle: number; // entier, [-25, 10]
 	consequence: string; // 1 à 2 phrases
 	defaut?: true; // exactement une par incident
-	butProbable?: number; // [0, 1], uniquement sur les options qui accordent un penalty
+	penalty?: true; // marque l'octroi d'un penalty, transformé selon PENALTY_PROBA
+	butProbable?: number; // [0, 1], remplace PENALTY_PROBA sur cette option seulement
 	expulsion?: true; // marque l'infériorité numérique pour la suite du match
 }
 
@@ -124,6 +125,53 @@ export interface Mention {
 export interface IncidentProgramme {
 	minute: number;
 	incident: Incident;
+}
+
+// ── Partie en cours (appliquer.ts) ──
+
+export interface DecisionPrise {
+	incidentId: string;
+	minute: number;
+	famille: Famille;
+	gravite: Gravite;
+	optionIndex: number;
+	severite: Severite;
+	justesse: Justesse;
+	dControle: number;
+	/** Vraie quand le chrono a expiré et que l'option par défaut a été jouée. */
+	nonDecidee: boolean;
+}
+
+export interface EtatPartie {
+	match: Match;
+	/** Index du prochain incident à jouer, de 0 à 12. */
+	index: number;
+	controle: number;
+	decisions: DecisionPrise[];
+	buts: { domicile: number; exterieur: number };
+	/** Joueurs expulsés, toutes équipes confondues (02 §6 étape 5). */
+	expulsions: number;
+	nonDecidees: number;
+	/** Contrôle tombé à 0 : le match s'arrête à la minute courante. */
+	matchArrete: boolean;
+	termine: boolean;
+}
+
+// ── Résultat (noter.ts) ──
+
+export interface Resultat {
+	note: number;
+	justesse: number;
+	controle: number;
+	constance: number;
+	incoherences: number;
+	mention: string;
+	profilPresse: ProfilPresse;
+	cartonsJaunes: number;
+	cartonsRouges: number;
+	nonDecidees: number;
+	matchArrete: boolean;
+	buts: { domicile: number; exterieur: number };
 }
 
 export interface Match {

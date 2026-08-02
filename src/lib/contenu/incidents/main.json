@@ -30,7 +30,8 @@
 				"severite": 1,
 				"justesse": 0,
 				"dControle": -19,
-				"consequence": "Vous pointez le point de réparation. Le stade de Bourgnac vous découvre."
+				"consequence": "Vous pointez le point de réparation. Le stade de Bourgnac vous découvre.",
+				"penalty": true
 			}
 		]
 	},
@@ -65,14 +66,16 @@
 				"severite": 1,
 				"justesse": 0.7,
 				"dControle": -10,
-				"consequence": "Vous sifflez le point. Le bras était écarté, la déviation aussi, et vous avez choisi le bras."
+				"consequence": "Vous sifflez le point. Le bras était écarté, la déviation aussi, et vous avez choisi le bras.",
+				"penalty": true
 			},
 			{
 				"libelle": "Penalty et avertissement",
 				"severite": 2,
 				"justesse": 0,
 				"dControle": -20,
-				"consequence": "Le penalty plus le carton. Le défenseur n'a rien fait d'autre que se trouver là."
+				"consequence": "Le penalty plus le carton. Le défenseur n'a rien fait d'autre que se trouver là.",
+				"penalty": true
 			}
 		],
 		"var": {
@@ -117,14 +120,16 @@
 				"severite": 1,
 				"justesse": 1,
 				"dControle": 5,
-				"consequence": "Vous pointez le point sans hésiter. Le défenseur part vers le rond central sans discuter."
+				"consequence": "Vous pointez le point sans hésiter. Le défenseur part vers le rond central sans discuter.",
+				"penalty": true
 			},
 			{
 				"libelle": "Penalty et avertissement",
 				"severite": 2,
 				"justesse": 0.7,
 				"dControle": 1,
-				"consequence": "Penalty et carton pour le bras volontaire. Sévère, cohérent, et personne ne s'y attarde."
+				"consequence": "Penalty et carton pour le bras volontaire. Sévère, cohérent, et personne ne s'y attarde.",
+				"penalty": true
 			}
 		]
 	}

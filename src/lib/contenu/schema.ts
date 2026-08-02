@@ -33,6 +33,7 @@ export const OptionSchema = z.strictObject({
 	dControle: z.number().int().min(-25).max(10),
 	consequence: z.string().min(1),
 	defaut: z.literal(true).optional(),
+	penalty: z.literal(true).optional(),
 	butProbable: z.number().min(0).max(1).optional(),
 	expulsion: z.literal(true).optional()
 });

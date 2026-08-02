@@ -73,7 +73,8 @@
 				"severite": 1,
 				"justesse": 0,
 				"dControle": -20,
-				"consequence": "Vous pointez le point. La défense entière vient vous entourer et le match bascule ici."
+				"consequence": "Vous pointez le point. La défense entière vient vous entourer et le match bascule ici.",
+				"penalty": true
 			}
 		],
 		"var": {
