@@ -40,6 +40,7 @@
 
 		{#if partie.chronoActif}
 			<Chrono
+				lectureMs={partie.lectureMs}
 				dureeMs={partie.chronoMs}
 				cle={partie.etat.index}
 				onExpiration={() => partie.decider(null)}

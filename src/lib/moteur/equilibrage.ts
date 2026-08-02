@@ -2,38 +2,34 @@
 // Ces valeurs sont normatives : un écart se corrige dans la doc, pas dans ce fichier.
 //
 // ─────────────────────────────────────────────────────────────────────────────
-// ÉCARTS RELEVÉS PAR LA SIMULATION (V0-9) — aucune valeur n'a été touchée
+// CALIBRAGE (V0-9) — arbitrage rendu, la table de 02 §4 a été révisée
 // ─────────────────────────────────────────────────────────────────────────────
 //
-// `npm run simuler` (10 000 parties par agent et par division) ne reproduit pas
-// la table des médianes de 02 §4. Trois constats, dans l'ordre d'importance :
+// La première simulation ne reproduisait pas la table des médianes du dossier.
+// La décision prise est d'accepter le comportement mesuré et de réviser la
+// table, plutôt que de tordre les pondérations ou le contenu. Deux conséquences
+// assumées, désormais inscrites dans 02 §4 :
 //
-// 1. La table ne dit pas à quelle division elle s'applique, et aucune division
-//    ne tient les quatre cibles à ±4. Les moins mauvaises sont la 6 et la 8,
-//    avec 16 points d'écart cumulé. Prises une par une, les cibles tombent à
-//    des divisions différentes : « aléatoire » en 0, « connaît le foot » en 8,
-//    « constant » en 0, « parfait, 2 chronos ratés » en 3.
-//
-// 2. Le dossier attend 12 points d'écart entre « connaît le foot » (72) et
-//    « constant » (84). On en mesure 3. La cause n'est pas le dControle : c'est
-//    que la constance plafonne pour tout le monde, y compris pour un agent qui
-//    joue parfaitement — voir le point 3. Baisser le dControle des options à
-//    `justesse: 0,7`, le seul levier que prescrit 02 §4, ferait descendre les
-//    deux profils ensemble sans jamais creuser l'écart.
-//
-// 3. Un agent qui choisit toujours l'option `justesse: 1` obtient 81 de
-//    constance, pas 100, et plafonne donc à 96 de note. Cinq couples
-//    d'incidents ont des bonnes réponses mutuellement incohérentes au sens de
-//    02 §2 — même famille, gravités à 1 d'écart, sévérités à 2 ou plus. Exemple :
+// 1. Le jeu parfait plafonne à 96, pas à 100. Un agent qui choisit toujours
+//    l'option `justesse: 1` obtient 81 de constance : cinq couples d'incidents
+//    ont des bonnes réponses mutuellement incohérentes au sens de 02 §2 — même
+//    famille, gravités à 1 d'écart, sévérités à 2 ou plus. Exemple :
 //    `tacle_dernier_defenseur` (rouge, gravité 5) et `tacle_semelle_touche`
-//    (jaune, gravité 4). Ce ne sont pas des incohérences d'arbitrage : ce sont
+//    (jaune, gravité 4). Ce ne sont pas des incohérences d'arbitrage, ce sont
 //    deux situations différentes que la règle traite comme comparables parce
-//    qu'elle assimile la gravité à la similitude de l'action.
+//    qu'elle assimile la gravité à la similitude de l'action. C'est accepté :
+//    le 100 reste atteignable, mais seulement sur un tirage qui ne contient
+//    aucun de ces couples.
 //
-// Aucun de ces trois points ne se corrige sans toucher à une valeur normative
-// (règle de constance) ou à des gravités de contenu déjà écrites. Les deux
-// demandent un arbitrage. En attendant, les valeurs ci-dessous sont celles du
-// dossier, au chiffre près.
+// 2. La constance sépare peu les profils : 3 points entre « connaît le foot »
+//    et « constant », là où le dossier en annonçait 12. C'est la même cause.
+//    Si on veut un jour creuser cet écart, le levier est la règle de constance
+//    (`CONSTANCE.ecartGraviteMax`), pas les `dControle` du contenu.
+//
+// La table de 02 §4 porte maintenant les médianes mesurées à la division 6,
+// division du match du jour, et dit explicitement à quelle division elle
+// s'applique — l'ancienne ne le disait pas, et aucune division ne tenait ses
+// quatre cibles à ±4.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Division, Fenetre, Mention } from './types';
@@ -153,6 +149,22 @@ export const SEUILS_MENTION: readonly Mention[] = [
 	{ noteMin: 40, noteMax: 54, texte: 'Le match vous a échappé.' },
 	{ noteMin: 0, noteMax: 39, texte: 'Rapport transmis à la commission.' }
 ];
+
+// 02 §1 — temps de lecture, accordé avant que le chrono ne démarre
+//
+// Le chrono de la division mesure le temps de DÉCISION, pas le temps de
+// lecture. Un incident fait 45 à 90 mots : six secondes ne suffisent pas à le
+// lire, et faire courir le chrono pendant la lecture revenait à noter la
+// vitesse de lecture plutôt que l'arbitrage. Le texte s'affiche donc, le
+// joueur dispose du temps de lecture ci-dessous, et le chrono ne démarre
+// qu'ensuite. Les options restent cliquables pendant la lecture : qui a compris
+// tout de suite n'attend pas.
+export const LECTURE = {
+	msParMot: 220, // ≈ 270 mots par minute, lecture attentive d'un texte suivi
+	msParMotLibelle: 120, // un libellé se parcourt, il ne se lit pas comme une phrase
+	minimumMs: 3000,
+	maximumMs: 18000 // au-delà, l'incident est trop long : c'est au contenu de bouger
+} as const;
 
 // 02 §2 — contrôle du match
 export const CONTROLE = {

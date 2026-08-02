@@ -1,37 +1,48 @@
 <script lang="ts">
 	// Anneau de chrono. docs/02-game-design.md §1, docs/07 V0-8.
 	//
+	// Deux phases. D'abord la LECTURE : l'anneau reste plein, rien ne se
+	// consomme, le joueur lit. Puis la DÉCISION : l'anneau se vide selon le
+	// chrono de la division. Les options sont cliquables dès la première phase,
+	// qui a compris tout de suite n'attend pas.
+	//
 	// performance.now() + requestAnimationFrame, jamais setInterval : setInterval
 	// dérive et se fait étrangler par les navigateurs en arrière-plan.
 	//
 	// Le décompte se met en pause sur visibilitychange et reprend au retour. Une
 	// notification entrante ne doit jamais coûter une décision au joueur : le
-	// temps passé onglet caché n'est pas décompté.
+	// temps passé onglet caché n'est décompté dans aucune des deux phases.
 
 	import { untrack } from 'svelte';
 
 	interface Props {
+		/** Temps de lecture accordé avant que le décompte ne commence. */
+		lectureMs: number;
+		/** Temps de décision, une fois la lecture terminée. */
 		dureeMs: number;
-		/** Change à chaque incident : remet le décompte à zéro. */
+		/** Change à chaque incident : remet les deux phases à zéro. */
 		cle: number;
 		onExpiration: () => void;
 	}
 
-	let { dureeMs, cle, onExpiration }: Props = $props();
+	let { lectureMs, dureeMs, cle, onExpiration }: Props = $props();
 
-	// Capture volontaire de la valeur initiale : l'effet ci-dessous reprend la
+	// Capture volontaire des valeurs initiales : l'effet ci-dessous reprend la
 	// main dès la première image, et partir de la durée pleine évite que l'anneau
 	// apparaisse vide le temps d'une image.
 	let restantMs = $state(untrack(() => dureeMs));
+	let enLecture = $state(untrack(() => lectureMs > 0));
 
 	const fraction = $derived(dureeMs === 0 ? 0 : Math.max(0, Math.min(1, restantMs / dureeMs)));
 
 	$effect(() => {
-		// Dépendances explicites : un nouvel incident relance un décompte neuf.
-		const duree = dureeMs;
+		// Dépendances explicites : un nouvel incident relance un cycle neuf.
+		const lecture = lectureMs;
+		const decision = dureeMs;
 		void cle;
 
-		restantMs = duree;
+		restantMs = decision;
+		enLecture = lecture > 0;
 
 		let debut = performance.now();
 		let ecouleAvantPause = 0;
@@ -45,11 +56,19 @@
 			// tant que le document est caché, quoi qu'il arrive.
 			if (!document.hidden) {
 				const ecoule = ecouleAvantPause + (performance.now() - debut);
-				restantMs = Math.max(0, duree - ecoule);
-				if (ecoule >= duree) {
-					expire = true;
-					onExpiration();
-					return;
+
+				if (ecoule < lecture) {
+					enLecture = true;
+					restantMs = decision;
+				} else {
+					enLecture = false;
+					const ecouleEnDecision = ecoule - lecture;
+					restantMs = Math.max(0, decision - ecouleEnDecision);
+					if (ecouleEnDecision >= decision) {
+						expire = true;
+						onExpiration();
+						return;
+					}
 				}
 			}
 			image = requestAnimationFrame(boucle);
@@ -82,11 +101,13 @@
 <!--
 	Pas de compteur de chiffres : on ne veut pas que le joueur regarde le chrono,
 	on veut qu'il le sente. L'habillage définitif vient en V0-11.
-	data-restant-ms sert aux tests, et ne coûte rien.
+	Les attributs data- servent aux tests, et ne coûtent rien.
 -->
 <div
 	class="chrono"
+	class:lecture={enLecture}
 	data-restant-ms={Math.round(restantMs)}
+	data-phase={enLecture ? 'lecture' : 'decision'}
 	aria-hidden="true"
 	style="--fraction: {fraction}"
 ></div>
@@ -104,5 +125,10 @@
 		height: 100%;
 		width: calc(var(--fraction) * 100%);
 		background: #333;
+	}
+
+	/* Pendant la lecture, l'anneau est plein et neutre : rien ne presse encore. */
+	.chrono.lecture::before {
+		background: #999;
 	}
 </style>

@@ -63,7 +63,22 @@ C'est 95 % du temps de jeu. Structure verticale, de haut en bas :
 
 Le chrono est un anneau fin qui se vide autour du bord de l'écran (pas un compteur de chiffres : on ne veut pas que le joueur regarde le chrono, on veut qu'il le sente). Durée selon la division, table §5.
 
-À l'expiration : l'option marquée `defaut: true` est jouée automatiquement, l'écran flashe une fois en rouge sombre (120 ms), et un compteur interne `nonDecidees++`.
+**Le chrono mesure le temps de décision, pas le temps de lecture.** Un incident fait 45 à 90 mots : six secondes ne suffisent pas à le lire, et faire courir le chrono pendant la lecture reviendrait à noter la vitesse de lecture plutôt que l'arbitrage. L'incident s'affiche donc avec l'anneau plein et immobile pendant un **temps de lecture**, puis le chrono démarre.
+
+| Constante | Valeur |
+|---|---|
+| Par mot du texte | 220 ms (≈ 270 mots par minute) |
+| Par mot de libellé d'option | 120 ms (un libellé se parcourt, il ne se lit pas comme une phrase) |
+| Plancher | 3 s |
+| Plafond | 18 s |
+
+Le compte porte sur le texte de l'incident **et** sur les libellés des options : le joueur doit avoir lu ses choix, pas seulement la situation. Les options sont cliquables dès le premier instant — qui a compris tout de suite n'attend pas, et rien n'oblige à subir la phase de lecture.
+
+Sur le contenu de V0-4, ça donne 12 à 18 s de lecture selon l'incident, soit 18 à 24 s par incident chrono compris, et **un match de 4,5 minutes** — dans la fourchette de 3 à 6 minutes de `01-concept.md`. Avant ce changement, un match durait 1,5 minute et le texte était illisible dans le temps imparti.
+
+Un incident qui atteint le plafond de 18 s est un incident trop long : c'est au contenu de bouger, pas au plafond.
+
+À l'expiration du chrono : l'option marquée `defaut: true` est jouée automatiquement, l'écran flashe une fois en rouge sombre (120 ms), et un compteur interne `nonDecidees++`.
 
 ### Écran 2 — Conséquence (1,4 s, non interruptible sauf tap)
 
@@ -230,19 +245,27 @@ Pondération assumée : la justesse pèse plus que tout, mais elle ne suffit pas
 
 La mention 92+ est la meilleure et c'est celle qui ressemble le moins à un compliment. C'est le cœur du ton du jeu : le meilleur arbitrage est celui qu'on oublie. Ne pas la remplacer par « Excellent ! ».
 
-### Distribution visée
+### Distribution mesurée
 
-Calibrage à vérifier par simulation (`npm run sim`, 10 000 parties avec un agent aléatoire pondéré, voir ticket V0-9) :
+Calibrée par simulation (`npm run simuler`, 10 000 parties par agent et par division, ticket V0-9). **Ces médianes sont celles de la division 6 (Ligue 1)**, division du match du jour — la table le dit maintenant explicitement, parce qu'aucune division ne tenait les cibles de la version précédente et que rien n'indiquait laquelle visait.
 
-| Profil | Note médiane attendue |
-|---|---|
-| Joueur au hasard | 38 |
-| Première partie, joueur normal | 61 |
-| Joueur qui connaît les règles du foot | 72 |
-| Joueur qui a compris la constance | 84 |
-| Parfait sur la justesse mais chrono raté 2× | 79 |
+| Profil | Note médiane | Tolérance |
+|---|---|---|
+| Joueur au hasard | 35 | ±4 |
+| Joueur qui connaît les règles du foot | 77 | ±4 |
+| Joueur qui a compris la constance | 80 | ±4 |
+| Parfait sur la justesse mais chrono raté 2× | 83 | ±4 |
+| Parfait | 95 | ±4 |
 
-Si la médiane de la première partie sort en dessous de 55 ou au-dessus de 68 après simulation, ajuster **uniquement** le `dControle` moyen des options `justesse: 0,7` — pas les pondérations de la note.
+Trois écarts avec la table d'origine, tous assumés après mesure :
+
+**Le jeu parfait plafonne à 96, pas à 100.** Un joueur qui choisit toujours l'option `justesse: 1` obtient 81 de constance, parce que cinq couples d'incidents ont des bonnes réponses mutuellement incohérentes au sens du §2 — même famille, gravités à un d'écart, sévérités à deux ou plus. Un carton rouge sur un tacle de dernier défenseur et un jaune sur un tacle en touche sont deux décisions correctes, mais la règle de constance les compare parce qu'elle assimile la gravité à la similitude de l'action. Le 100 reste atteignable, sur un tirage qui ne contient aucun de ces couples. C'est accepté en l'état.
+
+**La constance sépare peu.** Trois points entre « connaît le foot » et « a compris la constance », là où la table d'origine en annonçait douze. Même cause. Si on veut creuser cet écart un jour, le levier est `CONSTANCE.ecartGraviteMax`, pas les `dControle` du contenu — les baisser ferait descendre les deux profils ensemble.
+
+**Le profil « première partie, joueur normal » (61) est retiré.** Aucun des cinq agents de V0-9 ne le représente, et il n'a donc jamais été mesuré. À reprendre avec de vrais joueurs, pas avec un agent inventé pour l'occasion.
+
+Le levier de calibrage reste le même : ajuster **uniquement** le `dControle` moyen des options `justesse: 0,7` — jamais les pondérations de la note.
 
 ---
 
@@ -356,7 +379,9 @@ Aucun badge n'est monnayable, aucun ne débloque de contenu. Ce sont des lignes 
 
 ### 8.1 — Le chrono de six secondes
 
-**Ce que je jette :** le confort de lecture, les incidents longs, une partie de l'accessibilité, et la possibilité de réfléchir. Un texte d'incident ne peut pas dépasser 90 mots, ce qui interdit les mises en situation riches façon Destiny Eleven.
+**Ce que je jette :** les incidents longs, une partie de l'accessibilité, et la possibilité de réfléchir. Un texte d'incident ne peut pas dépasser 90 mots, ce qui interdit les mises en situation riches façon Destiny Eleven.
+
+**Ce que je ne jette plus :** le confort de lecture. La première version faisait courir le chrono dès l'affichage du texte, ce qui rendait le jeu injouable — six secondes pour lire soixante mots et choisir. Le temps de lecture du §1 corrige ça sans rien enlever à la contrainte : on décide toujours en six secondes, mais on décide en ayant lu.
 
 **Ce que je gagne :** la seule chose qui fait la différence entre arbitrer et commenter. Sans chrono, le jeu est un quiz de règlement et il n'y a aucune raison de le rejouer. Avec chrono, on se trompe *en sachant* qu'on se trompe, et c'est ça qui donne envie de recommencer.
 

@@ -60,12 +60,12 @@ function tousLesIndex(incident: Incident): number[] {
 const AGENTS: readonly Agent[] = [
 	{
 		nom: 'aléatoire uniforme',
-		cible: 38,
+		cible: 35,
 		decider: (incident, _index, rand) => tirerDans(rand, tousLesIndex(incident))
 	},
 	{
 		nom: 'connaît le foot',
-		cible: 72,
+		cible: 77,
 		// Choisit une option de justesse ≥ 0,7 dans 70 % des cas.
 		decider: (incident, _index, rand) => {
 			const justes = indexJustes(incident);
@@ -76,7 +76,7 @@ const AGENTS: readonly Agent[] = [
 	},
 	{
 		nom: 'constant',
-		cible: 84,
+		cible: 80,
 		// Idem, mais garde la même sévérité par famille d'un incident à l'autre.
 		decider: (incident, _index, rand, memoire) => {
 			const justes = indexJustes(incident);
@@ -99,12 +99,12 @@ const AGENTS: readonly Agent[] = [
 	},
 	{
 		nom: 'parfait',
-		cible: null, // le dossier ne chiffre pas ce profil
+		cible: 95, // plafonne à 96 : voir l'encart de calibrage en tête de equilibrage.ts
 		decider: (incident) => indexParfait(incident)
 	},
 	{
 		nom: 'parfait, 2 chronos ratés',
-		cible: 79,
+		cible: 83,
 		// Deux incidents non décidés, toujours les mêmes rangs : on veut mesurer
 		// le coût du malus, pas la variance de l'endroit où il tombe.
 		decider: (incident, index) => (index === 3 || index === 8 ? null : indexParfait(incident))

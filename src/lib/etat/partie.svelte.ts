@@ -5,6 +5,7 @@
 
 import { CLUBS, CONTEXTES, INCIDENTS } from '$lib/contenu';
 import { appliquer, etatInitial, type Decision } from '$lib/moteur/appliquer';
+import { dureeLectureMs } from '$lib/moteur/chrono';
 import { composer } from '$lib/moteur/composer';
 import { TABLE_DIVISIONS } from '$lib/moteur/equilibrage';
 import { divisionApres, noter } from '$lib/moteur/noter';
@@ -81,6 +82,14 @@ class Partie {
 		(this.incidentCourant?.incident.chronoS ??
 			TABLE_DIVISIONS[this.divisionEnCours]?.chronoS ??
 			6) * 1000
+	);
+
+	/**
+	 * Temps de lecture accordé avant que le chrono ne démarre, en millisecondes.
+	 * Le chrono mesure la décision, pas la lecture (02 §1).
+	 */
+	readonly lectureMs = $derived(
+		this.incidentCourant === null ? 0 : dureeLectureMs(this.incidentCourant.incident)
 	);
 
 	/** Réglage « sans chrono » : retire l'anneau, le malus, et le classement. */

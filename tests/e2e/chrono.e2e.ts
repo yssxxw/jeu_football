@@ -14,10 +14,45 @@ const MONTRER = `
 	document.dispatchEvent(new Event('visibilitychange'));
 `;
 
-async function restant(page: import('@playwright/test').Page): Promise<number> {
+type Page = import('@playwright/test').Page;
+
+async function restant(page: Page): Promise<number> {
 	const valeur = await page.locator(CHRONO).first().getAttribute('data-restant-ms');
 	return Number(valeur);
 }
+
+async function phase(page: Page): Promise<string | null> {
+	return page.locator(CHRONO).first().getAttribute('data-phase');
+}
+
+/** Attend la fin du temps de lecture, c'est-à-dire le démarrage du décompte. */
+async function attendreDecision(page: Page): Promise<void> {
+	await expect(page.locator('[data-phase="decision"]')).toBeVisible({ timeout: 25_000 });
+}
+
+test('le chrono commence par une phase de lecture', async ({ page }) => {
+	await page.goto('/');
+	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
+
+	await expect(page.locator(CHRONO)).toBeVisible();
+	expect(await phase(page)).toBe('lecture');
+
+	// Pendant la lecture, rien ne se consomme.
+	const avant = await restant(page);
+	await page.waitForTimeout(1200);
+	expect(await restant(page)).toBe(avant);
+});
+
+test('les options sont cliquables dès la lecture', async ({ page }) => {
+	await page.goto('/');
+	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
+
+	expect(await phase(page)).toBe('lecture');
+	await page.locator('ul li button').first().click();
+
+	// La décision est passée : on est sur l'écran de conséquence.
+	await expect(page.getByRole('button', { name: /Suivant|Feuille de match/ })).toBeVisible();
+});
 
 test('la durée du chrono suit la division', async ({ page }) => {
 	await page.goto('/');
@@ -31,10 +66,11 @@ test('la durée du chrono suit la division', async ({ page }) => {
 	expect(debut).toBeLessThanOrEqual(10000);
 });
 
-test('le chrono décompte', async ({ page }) => {
+test('le chrono décompte une fois la lecture terminée', async ({ page }) => {
+	test.setTimeout(60_000);
 	await page.goto('/');
 	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
-	await expect(page.locator(CHRONO)).toBeVisible();
+	await attendreDecision(page);
 
 	const avant = await restant(page);
 	await page.waitForTimeout(600);
@@ -47,15 +83,14 @@ test('le chrono décompte', async ({ page }) => {
 test("à l'expiration, l'option par défaut est jouée et comptée comme non décidée", async ({
 	page
 }) => {
-	test.setTimeout(60_000);
+	test.setTimeout(90_000);
 	await page.goto('/');
 	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
-	await expect(page.locator(CHRONO)).toBeVisible();
 
-	// On ne touche à rien : le chrono doit décider à notre place.
+	// On ne touche à rien : lecture puis chrono doivent décider à notre place.
 	await expect(
 		page.getByText("Décision non prise. L'option par défaut a été appliquée.")
-	).toBeVisible({ timeout: 15_000 });
+	).toBeVisible({ timeout: 45_000 });
 
 	// Et la feuille de match doit compter cette décision comme non prise.
 	await page.getByRole('button', { name: /Suivant|Feuille de match/ }).click();
@@ -64,12 +99,14 @@ test("à l'expiration, l'option par défaut est jouée et comptée comme non dé
 });
 
 test('passer en arrière-plan 30 s ne consomme pas de temps', async ({ page }) => {
-	test.setTimeout(90_000);
+	test.setTimeout(120_000);
 	await page.goto('/');
 	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
-	await expect(page.locator(CHRONO)).toBeVisible();
 
+	// On attend le décompte réel : c'est lui qu'il s'agit de mettre en pause.
+	await attendreDecision(page);
 	const avant = await restant(page);
+
 	await page.evaluate(CACHER);
 	await page.waitForTimeout(30_000);
 	await page.evaluate(MONTRER);
