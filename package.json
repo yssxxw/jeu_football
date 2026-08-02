@@ -15,7 +15,9 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:e2e": "playwright test",
-		"valider-contenu": "tsx scripts/valider-contenu.ts"
+		"valider-contenu": "tsx scripts/valider-contenu.ts",
+		"apercu": "tsx scripts/apercu-match.ts",
+		"figer-snapshot": "tsx scripts/figer-snapshot.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

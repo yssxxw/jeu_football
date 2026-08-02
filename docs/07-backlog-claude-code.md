@@ -109,6 +109,8 @@ Cible : 8 jours. Aucun compte, aucun serveur, aucun réseau autre que le chargem
 
 **Test manuel.** `npx tsx scripts/apercu-match.ts SIFFLET-2026-07-31 6` affiche le match en texte dans le terminal.
 
+**Constaté à l'implémentation.** Deux de ces critères — « aucune famille plus de 2 fois » et « taux d'ambigus dans `[0,46 ; 0,54]` à la division 6 » — ne sont pas vérifiables sur les 24 incidents de V0-4, et aucun algorithme ne peut les y tenir : au palier 0, quatre fenêtres n'offrent que leur quota exact et contiennent chacune un `tacle`, donc la famille déborde par construction ; et le vivier ne compte que 25 % d'ambigus au palier 6, contre 50 % visés. Les deux tiennent dès que l'invariant « ≥ 8 incidents par couple (palier, fenêtre) » est respecté. Ils sont donc testés sur un corpus synthétique complet (`tests/fixtures/corpus-complet.ts`), qui prouve l'algorithme, et ils repassent sur le contenu réel en **V0-13**. Le reste des critères est vérifié sur le contenu réel.
+
 ---
 
 ### V0-6 — Boucle jouable brute
@@ -269,6 +271,7 @@ Cible : 8 jours. Aucun compte, aucun serveur, aucun réseau autre que le chargem
 - les 44 noms de clubs ont été vérifiés un par un et `VERIFICATION.md` est daté et signé
 - les 26 badges sont tous atteignables : un test parcourt les conditions et vérifie qu'aucune n'est contradictoire
 - 20 matchs consécutifs en division 6 : aucun incident répété
+- les deux critères de V0-5 reportés ici passent enfin sur le contenu réel : aucune famille plus de 2 fois, et taux d'ambigus dans `[0,46 ; 0,54]` à la division 6 (basculer les tests de `corpus-complet.ts` vers le contenu réel, et lancer `COUVERTURE_BLOQUANTE=1 npm run valider-contenu`)
 
 **Test manuel.** Jouer 10 matchs et lire tous les textes. C'est long, c'est le seul moyen d'attraper les fautes.
 

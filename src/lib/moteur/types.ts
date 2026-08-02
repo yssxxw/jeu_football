@@ -132,5 +132,9 @@ export interface Match {
 	domicile: Club;
 	exterieur: Club;
 	contexte: Contexte;
+	// Tempérament du club à domicile après effet du contexte, borné à [0, 2].
+	temperamentDomicile: Temperament;
+	// Contrôle de départ de la division après effet du contexte.
+	controleDepart: number;
 	incidents: IncidentProgramme[]; // 12, minutes strictement croissantes
 }
