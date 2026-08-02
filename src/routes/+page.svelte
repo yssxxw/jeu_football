@@ -6,15 +6,18 @@
 	let pret = $state(false);
 
 	onMount(() => {
-		// seedLibre tire dans crypto : la composition est faite côté client
-		// uniquement, sinon le serveur et le navigateur ne composeraient pas
-		// le même match.
-		partie.composerAffiche(partie.matchsJoues);
+		// seedLibre tire dans crypto et le stockage n'existe pas côté serveur :
+		// tout se fait au montage, sinon le serveur et le navigateur ne
+		// composeraient pas le même match.
+		partie.initialiser(new Date(), {
+			mouvementReduit: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		});
+		partie.composerAffiche();
 		pret = true;
 	});
 
 	function coupDEnvoi() {
-		partie.demarrerMatchLibre(partie.matchsJoues);
+		partie.demarrerMatchLibre();
 		goto('/match');
 	}
 
@@ -27,6 +30,10 @@
 <svelte:head><title>SIFFLET</title></svelte:head>
 
 <h1>SIFFLET</h1>
+
+{#if partie.sauvegardeCorrompue}
+	<p>Sauvegarde illisible, mise de côté. La progression repart de zéro.</p>
+{/if}
 
 {#if pret && partie.match}
 	<p>{partie.nomDivision} · match {partie.matchsJoues + 1}</p>

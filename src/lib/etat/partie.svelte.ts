@@ -10,6 +10,15 @@ import { TABLE_DIVISIONS } from '$lib/moteur/equilibrage';
 import { divisionApres, noter } from '$lib/moteur/noter';
 import { seedDuJour, seedLibre } from '$lib/moteur/seed';
 import type { EtatPartie, Palier, Resultat } from '$lib/moteur/types';
+import {
+	charger,
+	enregistrer,
+	MAX_INCIDENTS_RECENTS,
+	sauvegardeVierge,
+	stockageNavigateur,
+	type StockageBrut
+} from '$lib/sauvegarde/stockage';
+import type { Sauvegarde } from '$lib/sauvegarde/types';
 
 const CONTENU = { incidents: INCIDENTS, clubs: CLUBS, contextes: CONTEXTES };
 
@@ -19,9 +28,12 @@ const DIVISION_MATCH_DU_JOUR: Palier = 6;
 export type PhaseEcran = 'incident' | 'consequence';
 
 class Partie {
-	/** Division courante du joueur. La persistance arrive en V0-7. */
-	division = $state<Palier>(0);
-	matchsJoues = $state(0);
+	private stockage: StockageBrut | null = null;
+
+	sauvegarde = $state<Sauvegarde>(sauvegardeVierge(new Date(0), { licence: 'FR-0000-A' }));
+	/** Vrai quand la sauvegarde précédente était illisible et a été mise de côté. */
+	sauvegardeCorrompue = $state(false);
+	chargee = $state(false);
 
 	etat = $state<EtatPartie | null>(null);
 	resultat = $state<Resultat | null>(null);
@@ -30,6 +42,8 @@ class Partie {
 	dernierChoix = $state<number | null>(null);
 	estMatchDuJour = $state(false);
 
+	readonly division = $derived(this.sauvegarde.progression.division);
+	readonly matchsJoues = $derived(this.sauvegarde.progression.matchsJoues);
 	readonly match = $derived(this.etat?.match ?? null);
 
 	readonly incidentCourant = $derived(
@@ -49,9 +63,7 @@ class Partie {
 	);
 
 	readonly controle = $derived(this.etat?.controle ?? 0);
-
 	readonly numeroIncident = $derived(this.etat === null ? 0 : this.etat.index + 1);
-
 	readonly nomDivision = $derived(TABLE_DIVISIONS[this.division]?.nom ?? '');
 
 	/** Chrono de l'incident courant, en secondes. Le chrono lui-même arrive en V0-8. */
@@ -59,21 +71,37 @@ class Partie {
 		this.incidentCourant?.incident.chronoS ?? TABLE_DIVISIONS[this.division]?.chronoS ?? 6
 	);
 
+	/** Lecture unique au démarrage. Ne lance jamais, même sans stockage. */
+	initialiser(maintenant: Date, options: { mouvementReduit?: boolean } = {}): void {
+		if (this.chargee) return;
+		this.stockage = stockageNavigateur();
+		const chargement = charger(this.stockage, maintenant, options);
+		this.sauvegarde = chargement.sauvegarde;
+		this.sauvegardeCorrompue = chargement.corrompue;
+		this.chargee = true;
+	}
+
 	/** Prépare l'affiche visible sur l'écran de coup d'envoi, sans démarrer la partie. */
-	composerAffiche(compteur: number): void {
-		const seed = seedLibre(this.division, compteur);
-		this.etat = etatInitial(composer(seed, this.division, CONTENU));
+	composerAffiche(): void {
+		const seed = seedLibre(this.division, this.matchsJoues);
+		this.etat = etatInitial(
+			composer(seed, this.division, CONTENU, {
+				recentIncidents: this.sauvegarde.recentIncidents
+			})
+		);
 		this.resultat = null;
 		this.phase = 'incident';
 		this.dernierChoix = null;
 		this.estMatchDuJour = false;
 	}
 
-	demarrerMatchLibre(compteur: number): void {
-		this.composerAffiche(compteur);
+	demarrerMatchLibre(): void {
+		this.composerAffiche();
 	}
 
 	demarrerMatchDuJour(maintenant: Date): void {
+		// Le match du jour ignore le cooldown local : il doit rester identique
+		// pour tout le monde, quelles que soient les parties déjà jouées.
 		const match = composer(seedDuJour(maintenant), DIVISION_MATCH_DU_JOUR, CONTENU);
 		this.etat = etatInitial(match);
 		this.resultat = null;
@@ -85,32 +113,69 @@ class Partie {
 	/** Joue une décision. `null` correspond à l'expiration du chrono. */
 	decider(decision: Decision): void {
 		if (this.etat === null || this.etat.termine) return;
-		const avant = this.etat;
-		const apres = appliquer(avant, decision);
+		const apres = appliquer(this.etat, decision);
 		this.dernierChoix = apres.decisions[apres.decisions.length - 1]?.optionIndex ?? null;
 		this.etat = apres;
 		this.phase = 'consequence';
 	}
 
 	/** Passe de l'écran de conséquence à l'incident suivant, ou termine le match. */
-	continuer(): void {
+	continuer(maintenant: Date): void {
 		if (this.etat === null) return;
 		if (this.etat.termine) {
-			this.terminer();
+			this.terminer(maintenant);
 			return;
 		}
 		this.phase = 'incident';
 	}
 
-	private terminer(): void {
+	/** Change un réglage et écrit immédiatement : c'est la seconde et dernière occasion d'écrire. */
+	changerReglage<C extends keyof Sauvegarde['reglages']>(
+		cle: C,
+		valeur: Sauvegarde['reglages'][C],
+		maintenant: Date
+	): void {
+		this.sauvegarde = {
+			...this.sauvegarde,
+			reglages: { ...this.sauvegarde.reglages, [cle]: valeur }
+		};
+		this.ecrire(maintenant);
+	}
+
+	private ecrire(maintenant: Date): void {
+		if (this.stockage === null) return;
+		this.sauvegarde = enregistrer(this.stockage, this.sauvegarde, maintenant);
+	}
+
+	private terminer(maintenant: Date): void {
 		if (this.etat === null || this.resultat !== null) return;
-		const resultat = noter(this.etat);
+		const etat = this.etat;
+		const resultat = noter(etat);
 		this.resultat = resultat;
-		this.matchsJoues += 1;
+
+		const progression = this.sauvegarde.progression;
 		// Le match du jour se joue en division 6 sans faire bouger la progression.
-		if (!this.estMatchDuJour) {
-			this.division = divisionApres(this.division, resultat.note);
-		}
+		const division = this.estMatchDuJour
+			? progression.division
+			: divisionApres(progression.division, resultat.note);
+
+		const joues = etat.decisions.map((prise) => prise.incidentId);
+
+		this.sauvegarde = {
+			...this.sauvegarde,
+			progression: {
+				...progression,
+				division,
+				divisionMax: Math.max(progression.divisionMax, division) as Palier,
+				matchsJoues: progression.matchsJoues + 1,
+				meilleureNote: Math.max(progression.meilleureNote ?? 0, resultat.note),
+				sommeNotes: progression.sommeNotes + resultat.note
+			},
+			recentIncidents: [...this.sauvegarde.recentIncidents, ...joues].slice(-MAX_INCIDENTS_RECENTS)
+		};
+
+		// Unique écriture d'une partie complète.
+		this.ecrire(maintenant);
 	}
 }
 

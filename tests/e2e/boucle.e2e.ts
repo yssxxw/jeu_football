@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 import { appliquer, etatInitial } from '../../src/lib/moteur/appliquer';
 import { composer } from '../../src/lib/moteur/composer';
 import { seedDuJour } from '../../src/lib/moteur/seed';
+import { jouerJusquALaFeuille } from './aide';
 import type { Club, Contexte, Incident } from '../../src/lib/moteur/types';
 
 // Le chargeur de Playwright ne gère pas les imports JSON sans attribut de type ;
@@ -23,19 +24,7 @@ test("coup d'envoi, douze décisions, une note", async ({ page }) => {
 	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
 
 	await expect(page.getByText(/Contrôle : \d+ \/ 100/)).toBeVisible();
-
-	// Douze incidents, chacun suivi de son écran de conséquence.
-	for (let n = 0; n < 12; n++) {
-		const options = page.locator('ul li button');
-		if ((await options.count()) === 0) break; // match arrêté avant la fin
-		await options.first().click();
-
-		const suivant = page.getByRole('button', { name: /Suivant|Feuille de match/ });
-		await expect(suivant).toBeVisible();
-		await suivant.click();
-	}
-
-	await expect(page).toHaveURL(/\/feuille$/);
+	await jouerJusquALaFeuille(page);
 
 	const note = page.locator('p strong').first();
 	await expect(note).toBeVisible();

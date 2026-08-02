@@ -24,7 +24,7 @@
 	});
 
 	function suivant() {
-		partie.continuer();
+		partie.continuer(new Date());
 		if (partie.resultat !== null) goto('/feuille');
 	}
 </script>
