@@ -67,7 +67,8 @@ export const IncidentSchema = z.strictObject({
 	var_eligible: z.boolean(),
 	texte: z.string().min(1),
 	options: z.array(OptionSchema).min(3).max(4),
-	var: BlocVarSchema.optional()
+	var: BlocVarSchema.optional(),
+	chronoS: z.number().int().min(3).max(15).optional()
 });
 
 export const ClubSchema = z.strictObject({

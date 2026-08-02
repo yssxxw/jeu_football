@@ -1,0 +1,90 @@
+[
+	{
+		"id": "duel_aerien_coude",
+		"famille": "duel_aerien",
+		"gravite": 3,
+		"paliers": [3, 4, 5, 6, 7, 8],
+		"fenetre": "3-15",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": false,
+		"texte": "Long dégagement du gardien, deux joueurs montent ensemble au milieu du terrain. L'attaquant de Marnières prend appui, le bras gauche part à l'horizontale et le coude touche la tempe de son vis-à-vis. L'impact est franc, le geste ressemble à un déséquilibre. Le défenseur reste assis au sol, une main sur l'oreille. Son entraîneur est sorti de sa zone et attend votre décision.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0,
+				"dControle": -15,
+				"consequence": "Le jeu continue dix secondes avec un joueur à terre. Le banc de l'équipe adverse se lève d'un bloc.",
+				"defaut": true
+			},
+			{
+				"libelle": "Faute, rien de plus",
+				"severite": 1,
+				"justesse": 0.7,
+				"dControle": -3,
+				"consequence": "Coup franc. Le défenseur se relève lentement. L'affaire est close sans être réglée."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Le carton tombe et personne ne le conteste, pas même l'intéressé. Le duel suivant sera propre."
+			},
+			{
+				"libelle": "Expulsion",
+				"severite": 4,
+				"justesse": 0.4,
+				"dControle": -11,
+				"consequence": "Marnières joue à dix pendant une heure. La rencontre change de nature d'un coup.",
+				"expulsion": true
+			}
+		]
+	},
+	{
+		"id": "duel_aerien_gardien_sortie",
+		"famille": "duel_aerien",
+		"gravite": 4,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "46-65",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": true,
+		"texte": "Centre au deuxième poteau, le gardien de Villebasse sort au poing dans un paquet de six joueurs. Il touche le ballon, il touche aussi la nuque de son propre défenseur et le crâne d'un attaquant. Tout le monde tombe. Le ballon file en corner. Un joueur ne se relève pas et deux autres viennent vous expliquer chacun une version différente.",
+		"options": [
+			{
+				"libelle": "Corner, rien d'autre",
+				"severite": 0,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Vous donnez le corner. Le gardien a joué le ballon en premier, le reste est du désordre de surface.",
+				"defaut": true
+			},
+			{
+				"libelle": "Coup franc pour l'attaque",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -11,
+				"consequence": "Coup franc dans les six mètres. Le gardien vous demande ce qu'il aurait dû faire d'autre."
+			},
+			{
+				"libelle": "Penalty",
+				"severite": 1,
+				"justesse": 0,
+				"dControle": -20,
+				"consequence": "Vous pointez le point. La défense entière vient vous entourer et le match bascule ici."
+			}
+		],
+		"var": {
+			"revelation": "L'image d'axe est claire : le poing touche le ballon avant tout contact avec un joueur. Les deux chocs suivants sont la conséquence du geste, pas sa cause.",
+			"maintien": {
+				"consequence": "Le penalty est confirmé par vous seul. Personne d'autre ne le confirme."
+			},
+			"rectification": {
+				"libelleCorrige": "Corner, rien d'autre",
+				"consequence": "Vous revenez au corner. Le gardien vous remercie d'un signe de tête, ce qui est rare."
+			}
+		}
+	}
+]

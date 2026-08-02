@@ -4,8 +4,13 @@
 
 import type { Club, Contexte, Incident } from '../moteur/types';
 import antijeu from './incidents/antijeu.json';
+import banc from './incidents/banc.json';
 import contestation from './incidents/contestation.json';
+import duelAerien from './incidents/duel_aerien.json';
+import horsJeu from './incidents/hors_jeu.json';
+import main from './incidents/main.json';
 import provocation from './incidents/provocation.json';
+import simulation from './incidents/simulation.json';
 import tacle from './incidents/tacle.json';
 import clubsBruts from './clubs.json';
 import contextesBruts from './contextes.json';
@@ -14,9 +19,14 @@ export { CONTENU_VERSION } from './version';
 
 export const INCIDENTS: readonly Incident[] = [
 	...tacle,
+	...main,
+	...simulation,
 	...contestation,
 	...antijeu,
-	...provocation
+	...duelAerien,
+	...horsJeu,
+	...provocation,
+	...banc
 ] as unknown as Incident[];
 
 export const CLUBS: readonly Club[] = clubsBruts as unknown as Club[];

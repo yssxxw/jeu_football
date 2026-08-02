@@ -1,0 +1,131 @@
+[
+	{
+		"id": "main_bras_le_corps",
+		"famille": "main",
+		"gravite": 2,
+		"paliers": [0, 1, 2, 3, 4],
+		"fenetre": "3-15",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Corner mal repoussé, le ballon revient au sol dans les six mètres. Le défenseur de Bourgnac se retourne pour protéger sa tête, bras serrés contre le buste. Le tir part de trois mètres et frappe l'avant-bras replié. Toute la ligne d'attaque lève les bras d'un seul mouvement. Le gardien récupère le ballon et le tient contre lui en vous regardant.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 1,
+				"dControle": 4,
+				"consequence": "Vous faites le geste de continuer. Deux attaquants insistent trois secondes, puis courent se replacer.",
+				"defaut": true
+			},
+			{
+				"libelle": "Coup franc, rien de plus",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -7,
+				"consequence": "Vous sifflez. Le défenseur écarte les bras, incrédule, et il n'a pas tort de l'être."
+			},
+			{
+				"libelle": "Penalty",
+				"severite": 1,
+				"justesse": 0,
+				"dControle": -19,
+				"consequence": "Vous pointez le point de réparation. Le stade de Bourgnac vous découvre."
+			}
+		]
+	},
+	{
+		"id": "main_tir_devie",
+		"famille": "main",
+		"gravite": 4,
+		"paliers": [5, 6, 7, 8],
+		"fenetre": "31-45",
+		"ambigu": true,
+		"tendu": false,
+		"var_eligible": true,
+		"texte": "Frappe de vingt mètres, déviation sur un défenseur à un mètre du tireur. Le ballon change de trajectoire et touche le bras d'un second défenseur, écarté du corps mais figé depuis avant la déviation. Personne dans la surface n'a eu le temps de bouger. Les attaquants réclament, les défenseurs montrent la déviation du doigt. Votre assistant ne dit rien dans l'oreillette.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 1,
+				"dControle": 4,
+				"consequence": "Vous laissez filer. La distance ne laissait aucune chance de retirer le bras, et ça se voit.",
+				"defaut": true
+			},
+			{
+				"libelle": "Corner",
+				"severite": 1,
+				"justesse": 0.7,
+				"dControle": -4,
+				"consequence": "Vous donnez le corner sans rien expliquer. Les deux camps trouvent ça arrangeant."
+			},
+			{
+				"libelle": "Penalty",
+				"severite": 1,
+				"justesse": 0.7,
+				"dControle": -10,
+				"consequence": "Vous sifflez le point. Le bras était écarté, la déviation aussi, et vous avez choisi le bras."
+			},
+			{
+				"libelle": "Penalty et avertissement",
+				"severite": 2,
+				"justesse": 0,
+				"dControle": -20,
+				"consequence": "Le penalty plus le carton. Le défenseur n'a rien fait d'autre que se trouver là."
+			}
+		],
+		"var": {
+			"revelation": "La déviation a lieu à un mètre dix du second défenseur. Le bras est en position écartée depuis deux secondes, il ne bouge pas au moment du contact.",
+			"maintien": {
+				"consequence": "Le penalty est tiré. La discussion durera jusqu'au parking."
+			},
+			"rectification": {
+				"libelleCorrige": "Laisser jouer",
+				"consequence": "Vous annulez et vous reprenez par un ballon à terre. Le tireur repose le ballon sans un mot."
+			}
+		}
+	},
+	{
+		"id": "main_penalty_reclame",
+		"famille": "main",
+		"gravite": 4,
+		"paliers": [0, 1, 2, 3, 4],
+		"fenetre": "46-65",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Centre venu de la droite, un défenseur de Bourgnac saute en tendant le bras au-dessus de la tête pour se grandir. Le ballon frappe la main ouverte, franchement, à un mètre cinquante. Il n'y avait aucune déviation, aucune surprise, et le bras n'avait rien à faire là-haut. Toute l'attaque a déjà les deux mains levées. Le défenseur regarde le sol.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0,
+				"dControle": -18,
+				"consequence": "Vous faites signe de continuer. La tribune derrière le but vous le rappellera jusqu'à la fin.",
+				"defaut": true
+			},
+			{
+				"libelle": "Coup franc en dehors",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -10,
+				"consequence": "Vous sifflez à l'entrée de la surface. La faute est dedans, tout le monde l'a vu."
+			},
+			{
+				"libelle": "Penalty",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Vous pointez le point sans hésiter. Le défenseur part vers le rond central sans discuter."
+			},
+			{
+				"libelle": "Penalty et avertissement",
+				"severite": 2,
+				"justesse": 0.7,
+				"dControle": 1,
+				"consequence": "Penalty et carton pour le bras volontaire. Sévère, cohérent, et personne ne s'y attarde."
+			}
+		]
+	}
+]

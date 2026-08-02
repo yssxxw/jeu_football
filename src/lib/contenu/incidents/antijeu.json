@@ -1,5 +1,75 @@
 [
 	{
+		"id": "antijeu_faute_tactique",
+		"famille": "antijeu",
+		"gravite": 3,
+		"paliers": [0, 1, 2, 3, 4, 5, 6],
+		"fenetre": "31-45",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Perte de balle au milieu, la contre-attaque part dans le dos de la défense de Pontérive. Le milieu qui vient de perdre le ballon accroche le maillot du porteur pendant trois mètres et le fait ralentir jusqu'à ce que ses partenaires soient revenus. Le geste est petit, tranquille, parfaitement volontaire. Il vous regarde en le faisant.",
+		"options": [
+			{
+				"libelle": "Laisser jouer, avantage",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -7,
+				"consequence": "L'attaque continue mais l'action est morte. Le porteur se retourne pour réclamer plutôt que pour jouer.",
+				"defaut": true
+			},
+			{
+				"libelle": "Faute, rien de plus",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -5,
+				"consequence": "Coup franc. Le milieu s'excuse d'un geste appris par cœur et retourne à sa place."
+			},
+			{
+				"libelle": "Faute et avertissement",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Le jaune pour antijeu. Le geste ne se reproduira pas, ni par lui ni par un autre."
+			}
+		]
+	},
+	{
+		"id": "antijeu_touche_retardee",
+		"famille": "antijeu",
+		"gravite": 2,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "81-90",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "87ᵉ, Villebasse mène 1-0. La touche est pour eux à trente mètres de leur but. Le joueur ramasse le ballon, cherche un partenaire pendant huit secondes, le repose, va chercher une autre position. C'est la deuxième touche jouée de cette façon. Le banc adverse compte à voix haute et la tribune s'y met.",
+		"options": [
+			{
+				"libelle": "Laisser faire, ajouter du temps",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -5,
+				"consequence": "Vous notez les secondes. Le temps additionnel sera juste, l'agacement restera.",
+				"defaut": true
+			},
+			{
+				"libelle": "Presser du geste et de la voix",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Vous avancez de dix mètres en montrant votre montre. La touche part dans les trois secondes."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 0.7,
+				"dControle": -2,
+				"consequence": "Le jaune à la 87ᵉ pour une touche. C'est défendable, et ça arrête tout de suite le procédé."
+			}
+		]
+	},
+	{
 		"id": "perte_de_temps_gardien",
 		"famille": "antijeu",
 		"gravite": 2,

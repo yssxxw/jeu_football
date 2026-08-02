@@ -1,0 +1,79 @@
+[
+	{
+		"id": "simulation_surface_leger",
+		"famille": "simulation",
+		"gravite": 3,
+		"paliers": [4, 5, 6, 7, 8],
+		"fenetre": "3-15",
+		"ambigu": true,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Onzième minute, l'ailier d'Aubercy entre dans la surface, touche le ballon vers l'extérieur et se laisse tomber au moment où le défenseur tend la jambe. Il y a un contact, léger, au niveau de la cheville. La chute arrive un demi-temps trop tard pour être franche, un demi-temps trop tôt pour être fausse. Le kop réclame déjà. Le défenseur lève les deux mains, paumes ouvertes.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0.7,
+				"dControle": -6,
+				"consequence": "Vous laissez filer. L'ailier reste au sol trois secondes de plus que nécessaire, puis se relève.",
+				"defaut": true
+			},
+			{
+				"libelle": "Coup de pied de but",
+				"severite": 1,
+				"justesse": 0.7,
+				"dControle": -4,
+				"consequence": "Vous rendez le ballon au gardien. Le banc d'Aubercy demande des explications que vous ne donnerez pas."
+			},
+			{
+				"libelle": "Penalty",
+				"severite": 1,
+				"justesse": 0,
+				"dControle": -18,
+				"consequence": "Vous sifflez. Le défenseur ne dit rien du tout, ce qui est pire que s'il criait."
+			},
+			{
+				"libelle": "Avertissement pour simulation",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 7,
+				"consequence": "Le carton pour l'attaquant. Le contact existait, la chute non, et vous l'avez dit clairement."
+			}
+		]
+	},
+	{
+		"id": "simulation_recidive",
+		"famille": "simulation",
+		"gravite": 3,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "46-65",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Deuxième fois en dix minutes que le même attaquant de Sestrano tombe au contact d'une épaule. La première, vous avez sifflé la faute. Celle-ci part encore plus tôt : l'épaule arrive, il est déjà au sol, et il se tient le genou du côté opposé. Le défenseur ne proteste même plus, il se contente de vous montrer le joueur du doigt.",
+		"options": [
+			{
+				"libelle": "Siffler la faute",
+				"severite": 0,
+				"justesse": 0,
+				"dControle": -13,
+				"consequence": "Coup franc pour lui. Il recommencera dans le quart d'heure et vous le savez déjà.",
+				"defaut": true
+			},
+			{
+				"libelle": "Laisser jouer",
+				"severite": 1,
+				"justesse": 0.7,
+				"dControle": -2,
+				"consequence": "Vous laissez courir. Il reste au sol, personne ne s'arrête, il finit par se relever."
+			},
+			{
+				"libelle": "Avertissement pour simulation",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 7,
+				"consequence": "Le carton. Il conteste huit secondes puis va se replacer. Plus personne ne tombe de cette façon-là."
+			}
+		]
+	}
+]

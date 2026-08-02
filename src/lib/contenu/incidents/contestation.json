@@ -1,5 +1,83 @@
 [
 	{
+		"id": "contestation_groupe",
+		"famille": "contestation",
+		"gravite": 3,
+		"paliers": [1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "31-45",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": false,
+		"texte": "Vous venez d'accorder un coup franc à l'entrée de la surface et quatre joueurs de Montverne arrivent sur vous en même temps. Personne ne touche, personne n'insulte, mais ils sont quatre, ils parlent tous et le mur ne se forme pas. Le tireur adverse attend, ballon sous le bras. Les vingt secondes qui viennent de passer se sont vues depuis la tribune.",
+		"options": [
+			{
+				"libelle": "Attendre qu'ils se dispersent",
+				"severite": 0,
+				"justesse": 0,
+				"dControle": -14,
+				"consequence": "Ils prennent encore quinze secondes. Le message reçu par les vingt-deux joueurs est qu'on peut vous attendre.",
+				"defaut": true
+			},
+			{
+				"libelle": "Appeler le capitaine, lui seul",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 8,
+				"consequence": "Vous écartez les trois autres d'un geste et vous parlez à un homme. Le mur se forme."
+			},
+			{
+				"libelle": "Avertir le plus véhément",
+				"severite": 2,
+				"justesse": 0.7,
+				"dControle": -2,
+				"consequence": "Un carton, le groupe se dissout aussitôt. Vous avez réglé la scène sans régler la cause."
+			},
+			{
+				"libelle": "Avertir deux joueurs",
+				"severite": 2,
+				"justesse": 0.4,
+				"dControle": -9,
+				"consequence": "Deux cartons pour une contestation collective. La rencontre devient nerveuse pour de bon."
+			}
+		]
+	},
+	{
+		"id": "contestation_fin_match",
+		"famille": "contestation",
+		"gravite": 4,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "66-80",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": false,
+		"texte": "79ᵉ, Aubercy mène d'un but. Vous refusez un coup franc et le capitaine adverse applaudit lentement, face à vous, trois fois. Il ne dit rien. Le geste est fait pour être vu depuis la tribune et il l'est. Ses coéquipiers regardent ailleurs. Le stade attend de voir ce que vous faites d'un applaudissement.",
+		"options": [
+			{
+				"libelle": "Ignorer",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -9,
+				"consequence": "Vous tournez le dos. Deux autres joueurs reprennent le geste dans le quart d'heure.",
+				"defaut": true
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Le carton pour attitude irrespectueuse. Il l'accepte, il savait ce qu'il faisait en le faisant."
+			},
+			{
+				"libelle": "Second avertissement, expulsion",
+				"severite": 3,
+				"justesse": 0.4,
+				"dControle": -13,
+				"consequence": "Il était déjà averti, il sort. Dix contre onze pour un applaudissement : le stade ne le pardonnera pas.",
+				"expulsion": true
+			}
+		]
+	},
+	{
 		"id": "capitaine_insiste",
 		"famille": "contestation",
 		"gravite": 3,

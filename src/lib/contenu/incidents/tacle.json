@@ -1,5 +1,159 @@
 [
 	{
+		"id": "tacle_intro",
+		"famille": "tacle",
+		"gravite": 2,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "3-15",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"chronoS": 10,
+		"texte": "Septième minute, rien ne s'est encore passé. Le milieu de Villebasse est en retard sur un ballon qu'il ne rattrapera pas, il ferme le pied et prend le mollet de son adversaire à hauteur de tibia. Le joueur tombe, se relève seul. Personne ne proteste : tout le monde a vu la même chose que vous. Le ballon est sorti en touche.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0,
+				"dControle": -10,
+				"consequence": "Vous laissez la touche. Le joueur fauché se retourne vers vous sans un mot, ce qui est déjà une phrase.",
+				"defaut": true
+			},
+			{
+				"libelle": "Faute, rien de plus",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Coup franc. Les deux équipes se replacent. Le match commence vraiment."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 0.4,
+				"dControle": -6,
+				"consequence": "Le carton sort à la septième minute. Le banc de Villebasse note le numéro et vous aussi."
+			}
+		]
+	},
+	{
+		"id": "tacle_pied_haut",
+		"famille": "tacle",
+		"gravite": 3,
+		"paliers": [0, 1, 2, 3, 4, 5],
+		"fenetre": "16-30",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Ballon à mi-hauteur au milieu du terrain. Le joueur de Villebasse arme un contrôle du pied à hauteur de poitrine, l'adversaire arrive tête baissée pour jouer le même ballon. La semelle passe à dix centimètres du visage sans le toucher. Les deux joueurs s'immobilisent et se regardent. Le stade a fait le bruit qu'il fait quand quelque chose a failli arriver.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -8,
+				"consequence": "Le jeu se poursuit. Les deux joueurs se retrouveront, et cette fois quelqu'un touchera.",
+				"defaut": true
+			},
+			{
+				"libelle": "Coup franc pour jeu dangereux",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Coup franc indirect, explication de dix secondes. Le message est passé des deux côtés."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 0.7,
+				"dControle": -2,
+				"consequence": "Le carton pour un geste qui n'a blessé personne. C'est sévère et ça se tient."
+			}
+		]
+	},
+	{
+		"id": "tacle_dernier_defenseur",
+		"famille": "tacle",
+		"gravite": 5,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "31-45",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": true,
+		"texte": "L'attaquant d'Ashgrove récupère à quarante mètres, il n'a plus que le dernier défenseur devant lui et le gardien très avancé. Le défenseur d'Eichbrunn tente le tacle glissé de côté, rate le ballon, prend le tibia. L'action était partie vers le but, la course était lancée, le contact est net. Le tacleur est déjà debout, les bras écartés, avant même que vous n'ayez sorti quoi que ce soit.",
+		"options": [
+			{
+				"libelle": "Faute, rien de plus",
+				"severite": 1,
+				"justesse": 0,
+				"dControle": -17,
+				"consequence": "Coup franc et rien d'autre. Tout le banc d'Ashgrove est debout sur la ligne.",
+				"defaut": true
+			},
+			{
+				"libelle": "Faute et avertissement",
+				"severite": 2,
+				"justesse": 0.4,
+				"dControle": -9,
+				"consequence": "Le jaune sort. Personne ne comprend pourquoi ce n'est pas l'autre couleur."
+			},
+			{
+				"libelle": "Faute et expulsion",
+				"severite": 4,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Le rouge. Eichbrunn joue à dix, mais la décision ne se discute pas et le stade le sait.",
+				"expulsion": true
+			}
+		],
+		"var": {
+			"revelation": "Le ralenti donne la course : le ballon est devant l'attaquant, la surface est à vingt mètres, aucun autre défenseur n'est en mesure d'intervenir. Le contact précède le ballon.",
+			"maintien": {
+				"consequence": "Le tacleur finit la rencontre sur le terrain. Le rapport de délégué, lui, mentionnera l'action."
+			},
+			"rectification": {
+				"libelleCorrige": "Faute et expulsion",
+				"consequence": "Vous revenez, vous sortez le rouge. Le joueur ne proteste même pas, il avait compris avant vous."
+			}
+		}
+	},
+	{
+		"id": "tacle_semelle_rouge",
+		"famille": "tacle",
+		"gravite": 5,
+		"paliers": [0, 1, 2, 3],
+		"fenetre": "66-80",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": false,
+		"texte": "Soixante-onzième minute, 2-2, le ballon est à un mètre des deux joueurs. Celui de Marnières arrive en glissade des deux pieds, semelles en avant, à hauteur de genou, et il arrive vite. Il ne joue pas le ballon. Le joueur touché hurle une fois puis se tait. Les deux bancs sont sur le terrain avant que vous n'ayez atteint le point d'impact.",
+		"options": [
+			{
+				"libelle": "Faute et avertissement",
+				"severite": 2,
+				"justesse": 0,
+				"dControle": -22,
+				"consequence": "Le jaune. Le banc adverse ne redescendra pas de la rencontre et il aura raison.",
+				"defaut": true
+			},
+			{
+				"libelle": "Faute et second avertissement",
+				"severite": 3,
+				"justesse": 0.4,
+				"dControle": -12,
+				"consequence": "Vous sortez le second jaune sur un geste qui valait mieux que ça. La sortie se fait dans le bruit.",
+				"expulsion": true
+			},
+			{
+				"libelle": "Faute et expulsion directe",
+				"severite": 4,
+				"justesse": 1,
+				"dControle": 8,
+				"consequence": "Le rouge, immédiat. Le calme revient d'un coup parce que la décision était la seule possible.",
+				"expulsion": true
+			}
+		]
+	},
+	{
 		"id": "tacle_semelle_touche",
 		"famille": "tacle",
 		"gravite": 4,

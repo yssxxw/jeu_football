@@ -1,0 +1,72 @@
+[
+	{
+		"id": "banc_entraineur_zone",
+		"famille": "banc",
+		"gravite": 2,
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "16-30",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Vingt-quatrième minute. L'entraîneur de Ponteverde est sorti de sa zone technique pour la troisième fois, il donne des consignes à six mètres de la ligne de touche et parle à votre assistant à chaque ballon sorti. Rien d'insultant. Il occupe l'espace, simplement, et il le sait. Le quatrième arbitre vous a déjà fait signe deux fois.",
+		"options": [
+			{
+				"libelle": "Ne rien faire",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -6,
+				"consequence": "Il reste dehors. À la mi-temps il aura pris quinze mètres et vous devrez régler ça devant tout le monde.",
+				"defaut": true
+			},
+			{
+				"libelle": "Le renvoyer dans sa zone",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Il rentre en levant les mains. Vous n'y reviendrez pas de la rencontre."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 0.7,
+				"dControle": -3,
+				"consequence": "Le carton pour l'entraîneur. Son banc se tait, sa tribune beaucoup moins."
+			}
+		]
+	},
+	{
+		"id": "banc_quatrieme_arbitre",
+		"famille": "banc",
+		"gravite": 2,
+		"paliers": [5, 6, 7, 8],
+		"fenetre": "46-65",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": false,
+		"texte": "Le quatrième arbitre vous appelle : l'entraîneur adjoint d'Alcázar de Nieva a répété trois fois la même phrase sur votre compte, assez fort pour que la première rangée l'entende. Il n'y a pas eu de geste. Vous n'avez rien entendu vous-même. Le quatrième arbitre attend votre décision, l'entraîneur principal s'est déjà mis entre vous et son adjoint.",
+		"options": [
+			{
+				"libelle": "Reprendre le jeu, ne rien faire",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -7,
+				"consequence": "Vous repartez. Votre quatrième arbitre reste seul avec un banc qui a compris qu'il ne servait à rien.",
+				"defaut": true
+			},
+			{
+				"libelle": "Avertissement à l'adjoint",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Le carton part vers le banc. Le principal fait asseoir son adjoint lui-même."
+			},
+			{
+				"libelle": "Expulsion de l'adjoint",
+				"severite": 4,
+				"justesse": 0.7,
+				"dControle": -5,
+				"consequence": "Il monte en tribune. Le banc travaille à un homme de moins et vous le paierez en fin de rencontre."
+			}
+		]
+	}
+]

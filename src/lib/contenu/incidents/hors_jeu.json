@@ -1,0 +1,82 @@
+[
+	{
+		"id": "hors_jeu_retour",
+		"famille": "hors_jeu",
+		"gravite": 3,
+		"paliers": [2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "16-30",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "Contre-attaque de Valmorena. L'attaquant part de sa moitié de terrain, il est parti en position régulière, aucun doute là-dessus. Le problème est le deuxième : son partenaire, hors jeu au départ de l'action, revient dans le champ de vision du gardien sans jamais toucher le ballon. Le tir rentre. Votre assistant n'a pas levé. Le banc adverse traverse déjà la zone technique.",
+		"options": [
+			{
+				"libelle": "But accordé",
+				"severite": 0,
+				"justesse": 0.7,
+				"dControle": -9,
+				"consequence": "Vous montrez le rond central. Le gardien reste planté sur sa ligne à discuter avec ses défenseurs.",
+				"defaut": true
+			},
+			{
+				"libelle": "But refusé, hors-jeu de position",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 5,
+				"consequence": "Vous annulez. Le joueur revenu dans le champ du gardien a gêné, vous le dites au capitaine en trois mots."
+			},
+			{
+				"libelle": "But accordé, capitaine averti",
+				"severite": 2,
+				"justesse": 0,
+				"dControle": -16,
+				"consequence": "Vous accordez le but et vous sanctionnez la protestation. Les deux décisions séparément se défendent ; ensemble, non."
+			}
+		]
+	},
+	{
+		"id": "hors_jeu_but_limite",
+		"famille": "hors_jeu",
+		"gravite": 4,
+		"paliers": [4, 5, 6, 7, 8],
+		"fenetre": "66-80",
+		"ambigu": true,
+		"tendu": false,
+		"var_eligible": true,
+		"texte": "Le ballon entre au fond à la 74ᵉ, 0-0 jusque-là. Au départ de la passe, l'épaule de l'attaquant de Ponteverde dépasse la ligne du dernier défenseur d'une longueur de maillot, pas plus. Votre assistant a gardé le drapeau baissé une seconde puis l'a levé. Les buteurs célèbrent déjà dans le parcage. Le capitaine adverse vous demande de trancher tout de suite.",
+		"options": [
+			{
+				"libelle": "Suivre l'assistant, but refusé",
+				"severite": 0,
+				"justesse": 0.7,
+				"dControle": -6,
+				"consequence": "Vous annulez. Le banc de Ponteverde réclame la ligne pendant deux minutes.",
+				"defaut": true
+			},
+			{
+				"libelle": "Accorder le but",
+				"severite": 0,
+				"justesse": 0.7,
+				"dControle": -8,
+				"consequence": "Vous montrez le rond central. Votre assistant baisse son drapeau et vous regarde."
+			},
+			{
+				"libelle": "But refusé, j'explique",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Vous annulez et vous expliquez l'épaule en deux phrases. C'est court, c'est net, ça tient."
+			}
+		],
+		"var": {
+			"revelation": "Le tracé donne l'épaule de l'attaquant en avance de dix-huit centimètres au moment de la passe. La position est irrégulière, de peu.",
+			"maintien": {
+				"consequence": "Le but reste accordé. La ligne tracée passera en boucle jusqu'à mercredi."
+			},
+			"rectification": {
+				"libelleCorrige": "But refusé, j'explique",
+				"consequence": "Vous annulez le but. Le stade siffle l'outil, ce qui vous arrange pour une fois."
+			}
+		}
+	}
+]

@@ -49,6 +49,10 @@ export interface Incident {
 	texte: string; // 45 à 90 mots
 	options: Option[]; // 3 ou 4, triées par severite croissante
 	var?: BlocVar;
+	// Chrono propre à l'incident, en secondes. Écrase celui de la division.
+	// Existe pour tacle_intro, que 02-game-design.md §9 fixe à 10 s : c'est le
+	// tutoriel invisible et il doit laisser le temps de lire. Contenu, pas équilibrage.
+	chronoS?: number;
 }
 
 export type Pays = 'federation' | 'riviera' | 'alcazar' | 'ashmoor' | 'nordhalle';
