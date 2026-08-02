@@ -1,0 +1,134 @@
+[
+	{
+		"id": "ponterive",
+		"nom": "AS Pontérive",
+		"abrege": "PON",
+		"ville": "Pontérive",
+		"pays": "federation",
+		"paliers": [0, 1, 2, 3],
+		"temperament": 1,
+		"surnom": "les Rivois",
+		"couleurs": ["#1B3A6B", "#FFFFFF"]
+	},
+	{
+		"id": "villebasse",
+		"nom": "US Villebasse",
+		"abrege": "VIL",
+		"ville": "Villebasse",
+		"pays": "federation",
+		"paliers": [0, 1, 2],
+		"temperament": 2,
+		"surnom": "les Meuniers",
+		"couleurs": ["#7A1F2B", "#F2E9DC"]
+	},
+	{
+		"id": "bourgnac",
+		"nom": "FC Bourgnac",
+		"abrege": "BOU",
+		"ville": "Bourgnac",
+		"pays": "federation",
+		"paliers": [1, 2, 3, 4],
+		"temperament": 0,
+		"surnom": "les Sangliers",
+		"couleurs": ["#1F5132", "#FFFFFF"]
+	},
+	{
+		"id": "marnieres",
+		"nom": "Stade Marnières",
+		"abrege": "MAR",
+		"ville": "Marnières",
+		"pays": "federation",
+		"paliers": [2, 3, 4, 5],
+		"temperament": 1,
+		"surnom": "les Verriers",
+		"couleurs": ["#C8102E", "#0B0B0B"]
+	},
+	{
+		"id": "aubercy",
+		"nom": "Racing Aubercy",
+		"abrege": "AUB",
+		"ville": "Aubercy",
+		"pays": "federation",
+		"paliers": [4, 5, 6],
+		"temperament": 1,
+		"surnom": "les Ciel-et-Noir",
+		"couleurs": ["#6CACE4", "#101820"]
+	},
+	{
+		"id": "montverne",
+		"nom": "Olympique Montverne",
+		"abrege": "MON",
+		"ville": "Montverne",
+		"pays": "federation",
+		"paliers": [5, 6, 7, 8],
+		"temperament": 1,
+		"surnom": "les Loups",
+		"couleurs": ["#3A3A3A", "#F1BE48"]
+	},
+	{
+		"id": "ponteverde",
+		"nom": "Ponteverde Calcio",
+		"abrege": "PTV",
+		"ville": "Ponteverde",
+		"pays": "riviera",
+		"paliers": [5, 6, 7, 8],
+		"temperament": 2,
+		"surnom": "i Verdi",
+		"couleurs": ["#00594C", "#FFFFFF"]
+	},
+	{
+		"id": "sestrano",
+		"nom": "Sestrano 1908",
+		"abrege": "SES",
+		"ville": "Sestrano",
+		"pays": "riviera",
+		"paliers": [4, 5, 6, 7],
+		"temperament": 2,
+		"surnom": "i Grifoni",
+		"couleurs": ["#5B2A86", "#FFFFFF"]
+	},
+	{
+		"id": "valmorena",
+		"nom": "CD Valmorena",
+		"abrege": "VAL",
+		"ville": "Valmorena",
+		"pays": "alcazar",
+		"paliers": [3, 4, 5, 6],
+		"temperament": 1,
+		"surnom": "los Amarillos",
+		"couleurs": ["#FFC72C", "#00205B"]
+	},
+	{
+		"id": "alcazar_nieva",
+		"nom": "Real Alcázar de Nieva",
+		"abrege": "ALC",
+		"ville": "Nieva",
+		"pays": "alcazar",
+		"paliers": [6, 7, 8],
+		"temperament": 0,
+		"surnom": "los Reales",
+		"couleurs": ["#FFFFFF", "#4B306A"]
+	},
+	{
+		"id": "ashgrove",
+		"nom": "Ashgrove Town",
+		"abrege": "ASH",
+		"ville": "Ashgrove",
+		"pays": "ashmoor",
+		"paliers": [2, 3, 4, 5],
+		"temperament": 0,
+		"surnom": "the Grovers",
+		"couleurs": ["#B31942", "#FFFFFF"]
+	},
+	{
+		"id": "eichbrunn",
+		"nom": "TSV Eichbrunn",
+		"abrege": "EIC",
+		"ville": "Eichbrunn",
+		"pays": "nordhalle",
+		"paliers": [6, 7, 8],
+		"temperament": 0,
+		"surnom": "die Eichen",
+		"couleurs": ["#0F4C3A", "#E4E4E4"]
+	}
+]

@@ -1,0 +1,44 @@
+[
+	{
+		"id": "capitaine_insiste",
+		"famille": "contestation",
+		"gravite": 3,
+		"paliers": [2, 3, 4, 5, 6, 7, 8],
+		"fenetre": "16-30",
+		"ambigu": false,
+		"tendu": true,
+		"var_eligible": false,
+		"texte": "Vous venez de refuser un coup franc à l'entrée de la surface et le capitaine de Bourgnac ne lâche pas. Il vous suit sur six mètres, ni insultes ni contact, mais il parle fort et il pointe le sol du doigt à chaque phrase. Le stade voit très bien la scène. Ses coéquipiers ne viennent pas le chercher, ce qui est mauvais signe : ça veut dire qu'ils sont d'accord avec lui.",
+		"options": [
+			{
+				"libelle": "Continuer à marcher",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -7,
+				"consequence": "Il vous suit encore trois mètres, puis renonce. Il recommencera.",
+				"defaut": true
+			},
+			{
+				"libelle": "S'arrêter, le regarder, lui parler dix secondes",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": 8,
+				"consequence": "Il finit sa phrase et il s'en va. Vous n'aurez plus de problème avec lui."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 0.7,
+				"dControle": -3,
+				"consequence": "Il prend le carton et se tait. Son entraîneur commence à protester à sa place."
+			},
+			{
+				"libelle": "Avertissement et le renvoyer dans son camp",
+				"severite": 2,
+				"justesse": 0.4,
+				"dControle": -10,
+				"consequence": "Le geste est de trop. Ce qui était une discussion devient un incident."
+			}
+		]
+	}
+]

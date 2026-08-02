@@ -1,0 +1,46 @@
+[
+	{
+		"id": "maintien",
+		"texte": "Fin de saison. Les deux équipes jouent le maintien.",
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8]
+	},
+	{
+		"id": "derby",
+		"texte": "Derby. Les deux villes partagent un fleuve et ne partagent rien d'autre.",
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"effet": { "temperament": 1 }
+	},
+	{
+		"id": "montee",
+		"texte": "Une victoire et la montée est acquise. Le parking est plein depuis midi.",
+		"paliers": [0, 1, 2, 3, 4, 5],
+		"effet": {}
+	},
+	{
+		"id": "match_en_retard",
+		"texte": "Match en retard, reprogrammé un mardi soir. Les joueurs sont là, les esprits pas tout à fait.",
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8]
+	},
+	{
+		"id": "huis_clos_partiel",
+		"texte": "Tribune principale fermée par la commission de discipline. On entend les bancs comme jamais.",
+		"paliers": [1, 2, 3, 4, 5, 6, 7, 8],
+		"effet": { "temperament": -1 }
+	},
+	{
+		"id": "retour_ancien",
+		"texte": "L'ancien capitaine du club revient sous d'autres couleurs. Les banderoles sont prêtes.",
+		"paliers": [3, 4, 5, 6, 7, 8]
+	},
+	{
+		"id": "match_couperet",
+		"texte": "Le perdant dit adieu à sa saison. Tout le monde le sait, personne ne le dit.",
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		"effet": { "controleDepart": -4 }
+	},
+	{
+		"id": "guichets_fermes",
+		"texte": "Guichets fermés pour la première fois depuis douze ans. Le speaker a ressorti le disque des grands soirs.",
+		"paliers": [0, 1, 2, 3, 4, 5, 6, 7, 8]
+	}
+]

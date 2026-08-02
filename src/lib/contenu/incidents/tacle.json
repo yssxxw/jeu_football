@@ -1,0 +1,107 @@
+[
+	{
+		"id": "tacle_semelle_touche",
+		"famille": "tacle",
+		"gravite": 4,
+		"paliers": [3, 4, 5, 6, 7, 8],
+		"fenetre": "46-65",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": true,
+		"texte": "Le latéral de Pontérive a pris trois mètres à son vis-à-vis depuis dix minutes, et ça commence à se voir dans les tribunes. Le milieu adverse sort du bloc, arrive avec deux temps de retard, semelle en avant, à trente centimètres de la ligne de touche. Il touche le ballon en premier. Il touche la cheville juste après. Le garçon reste au sol. Le banc de Pontérive est déjà debout.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0,
+				"dControle": -18,
+				"consequence": "Le jeu continue trois secondes puis s'arrête tout seul, personne ne joue le ballon. Les deux bancs vous regardent.",
+				"defaut": true
+			},
+			{
+				"libelle": "Faute, rien de plus",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -9,
+				"consequence": "Vous rendez le ballon. Le capitaine de Pontérive vient chercher une explication et n'a pas l'air de la trouver."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 4,
+				"consequence": "Le joueur prend le carton sans discuter. Son entraîneur le remplace huit minutes plus tard."
+			},
+			{
+				"libelle": "Expulsion",
+				"severite": 4,
+				"justesse": 0.4,
+				"dControle": -6,
+				"consequence": "Villebasse joue à dix. Le banc explose. Le stade se réveille, et pas dans le bon sens.",
+				"expulsion": true
+			}
+		],
+		"var": {
+			"revelation": "Le ralenti est net. Le ballon part d'abord, la semelle arrive après, pied à hauteur de cheville, appui en extension. Il n'y a pas de contrôle du geste.",
+			"maintien": {
+				"consequence": "La commission reverra l'image jeudi."
+			},
+			"rectification": {
+				"libelleCorrige": "Avertissement",
+				"consequence": "Vous revenez vers le joueur et vous sortez le jaune. Personne ne comprend pourquoi ça a pris quarante secondes."
+			}
+		}
+	},
+	{
+		"id": "contact_surface_appui",
+		"famille": "tacle",
+		"gravite": 5,
+		"paliers": [5, 6, 7, 8],
+		"fenetre": "66-80",
+		"ambigu": true,
+		"tendu": true,
+		"var_eligible": true,
+		"texte": "Deuxième poteau, 78ᵉ, 1-1. Le centre est trop long, l'attaquant de Villebasse le rattrape en pivotant. Le défenseur ferme, tend la jambe, l'attaquant part au sol dans un cri que la moitié du stade a entendu. Il y a eu contact, ça ne fait aucun doute. Où exactement, c'est autre chose : le duel commence dehors et finit dedans. Le capitaine de Villebasse court déjà vers vous, les deux bras en l'air.",
+		"options": [
+			{
+				"libelle": "Laisser jouer",
+				"severite": 0,
+				"justesse": 0.7,
+				"dControle": -12,
+				"consequence": "Corner. Villebasse hurle pendant vingt secondes puis se replace. Vous entendez le banc jusqu'à la fin.",
+				"defaut": true
+			},
+			{
+				"libelle": "Coup franc, hors de la surface",
+				"severite": 1,
+				"justesse": 1,
+				"dControle": -2,
+				"consequence": "Coup franc à un mètre de la ligne. Personne n'est content, ce qui est en général bon signe."
+			},
+			{
+				"libelle": "Penalty",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -8,
+				"consequence": "Vous pointez le point. Transformé (76 %). Pontérive ne vous adressera plus la parole du match."
+			},
+			{
+				"libelle": "Penalty et avertissement pour l'attaquant",
+				"severite": 2,
+				"justesse": 0,
+				"dControle": -20,
+				"consequence": "Vous sifflez penalty puis vous avertissez celui qui l'a obtenu. Plus personne ne sait ce que vous avez vu."
+			}
+		],
+		"var": {
+			"revelation": "Le pied d'appui du défenseur est à vingt centimètres à l'extérieur de la ligne. Le contact se produit là. La chute a lieu dedans.",
+			"maintien": {
+				"consequence": "Le penalty reste. Le point de contact, lui, restera au ralenti de dimanche soir."
+			},
+			"rectification": {
+				"libelleCorrige": "Coup franc, hors de la surface",
+				"consequence": "Vous annulez le penalty et posez le ballon sur la ligne, côté dehors. Le stade siffle la machine, pas vous."
+			}
+		}
+	}
+]

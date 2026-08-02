@@ -1,0 +1,37 @@
+[
+	{
+		"id": "perte_de_temps_gardien",
+		"famille": "antijeu",
+		"gravite": 2,
+		"paliers": [3, 4, 5, 6, 7, 8],
+		"fenetre": "81-90",
+		"ambigu": false,
+		"tendu": false,
+		"var_eligible": false,
+		"texte": "88ᵉ, Ashgrove mène 1-0 à l'extérieur. Leur gardien met neuf secondes à se relever d'une prise de balle qu'il n'a pas subie, replace ses gants, regarde le banc. C'est le troisième dégagement du même acabit en dix minutes. Vous l'avez déjà prévenu une fois, à la 76ᵉ, sans carton. Le kop d'en face compte à voix haute.",
+		"options": [
+			{
+				"libelle": "Ajouter du temps, ne rien dire",
+				"severite": 0,
+				"justesse": 0.4,
+				"dControle": -6,
+				"consequence": "Vous lèverez cinq minutes au tableau. Ça ne changera rien à ce qu'il fait.",
+				"defaut": true
+			},
+			{
+				"libelle": "Nouvel avertissement verbal",
+				"severite": 1,
+				"justesse": 0.4,
+				"dControle": -4,
+				"consequence": "Il hoche la tête. Le dégagement suivant prend onze secondes."
+			},
+			{
+				"libelle": "Avertissement",
+				"severite": 2,
+				"justesse": 1,
+				"dControle": 6,
+				"consequence": "Le carton tombe. Le rythme reprend immédiatement. Le banc d'Ashgrove trouve ça sévère, tout le monde s'en fiche."
+			}
+		]
+	}
+]

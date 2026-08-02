@@ -56,6 +56,16 @@ interface Incident {
 - aucun caractère hors du plan latin étendu (attrape les emojis)
 - pour chaque couple (palier, fenêtre) : ≥ 8 incidents éligibles
 
+**Écarts constatés à l'implémentation (V0-4), à trancher.** Trois règles de cette section sont contredites par les cinq incidents étalons de `03-contenu.md`, qui font foi au caractère près. `valider-contenu` les signale sous l'étiquette « écart doc » sans faire échouer le build, en attendant l'arbitrage :
+
+| Règle | Ce que fait l'étalon | Décision à prendre |
+|---|---|---|
+| `options` triées par sévérité **sans doublon** | `contact_surface_appui` (0,1,1,2), `capitaine_insiste` (0,1,2,2) et `celebration_kop_adverse` (0,1,2,2) portent deux options de même sévérité | le tri est appliqué **au sens large** ; deux options peuvent partager une sévérité, c'est ce qui permet d'opposer deux gestes de même niveau |
+| `libelle` ≤ 34 caractères | cinq libellés étalons vont de 36 à 47 caractères | soit l'UI accepte deux lignes, soit les libellés sont raccourcis en V0-11 |
+| `ambigu: true` ⇒ ≥ 2 options à `0,7` | `contact_surface_appui` est déclaré ambigu et n'a qu'une option à `0,7` | soit le drapeau passe à `false`, soit une `justesse` bouge — les deux touchent à des valeurs normatives |
+
+Le dixième invariant (≥ 8 incidents par couple) n'est atteignable qu'avec le contenu complet : il est un avertissement jusqu'à V0-13, où `COUVERTURE_BLOQUANTE=1` le rend bloquant.
+
 ### `clubs.json`, `contextes.json`, `badges.json`, `presse.json`
 
 ```ts
