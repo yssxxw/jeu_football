@@ -5,11 +5,13 @@
 	// rectangle plein sort en rotation. Le rouge et le jaune ne portent jamais
 	// une information seule : le carton a toujours son libellé à côté (06 §7).
 
-	import type { Severite } from '$lib/moteur/types';
+	import type { Famille, Severite } from '$lib/moteur/types';
+	import Pictogramme from './Pictogramme.svelte';
 
 	interface Props {
 		libelle: string;
 		consequence: string;
+		famille: Famille;
 		severite: Severite;
 		nonDecidee: boolean;
 		resolutionVar: 'maintien' | 'rectification' | undefined;
@@ -20,6 +22,7 @@
 	let {
 		libelle,
 		consequence,
+		famille,
 		severite,
 		nonDecidee,
 		resolutionVar,
@@ -40,7 +43,10 @@
 </script>
 
 <section class="consequence papier" aria-live="assertive">
-	<p class="decision mono">{libelle}</p>
+	<div class="tete">
+		<Pictogramme {famille} taille={30} />
+		<p class="decision mono">{libelle}</p>
+	</div>
 
 	{#if carton !== null}
 		<p class="carton-ligne">
@@ -79,10 +85,25 @@
 		flex: none;
 	}
 
+	.tete {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		color: var(--encre-pale);
+	}
+
 	.decision {
 		font-size: 13px;
 		font-weight: 700;
 		color: var(--encre);
+	}
+
+	@media (min-width: 900px) {
+		.consequence {
+			min-height: 420px;
+			margin: 0;
+			padding: 36px;
+		}
 	}
 
 	.carton-ligne {

@@ -6,6 +6,7 @@
 
 	import { TABLE_DIVISIONS } from '$lib/moteur/equilibrage';
 	import type { DecisionPrise, Match, Palier, Resultat } from '$lib/moteur/types';
+	import Pictogramme from './Pictogramme.svelte';
 
 	interface Props {
 		match: Match;
@@ -102,7 +103,8 @@
 	{#if litigieux !== null && libelleLitigieux !== null}
 		<div class="litigieux">
 			<p class="mono entete-litige">
-				{litigieux.minute}' — {litigieux.famille.replace('_', ' ')}
+				<Pictogramme famille={litigieux.famille} taille={26} />
+				<span>{litigieux.minute}' — {litigieux.famille.replace('_', ' ')}</span>
 			</p>
 			<p class="ligne-litige">VOUS : {libelleLitigieux}</p>
 			<!-- La comparaison arrive en V1-6. Hors ligne comme avant serveur,
@@ -241,8 +243,25 @@
 	}
 
 	.entete-litige {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 		font-size: 11px;
 		color: var(--encre-pale);
+	}
+
+	/* Sur écran large, la feuille garde une largeur de lecture confortable
+	   plutôt que de s'étirer sur tout l'écran. */
+	@media (min-width: 900px) {
+		.feuille {
+			max-width: 620px;
+			margin: 0 auto;
+			padding: 40px;
+		}
+
+		.note {
+			font-size: 156px;
+		}
 	}
 
 	.ligne-litige {

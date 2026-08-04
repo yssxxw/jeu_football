@@ -2,9 +2,34 @@
 
 ## 1. Le parti pris
 
-Le jeu n'a pas l'air d'un jeu. Il a l'air d'**une feuille de match** : un document administratif, imprimé, tamponné, rempli à la main par quelqu'un qui a autre chose à faire. Fond noir de vestiaire, papier crème au centre, et le jaune et le rouge n'apparaissent que quand un carton sort.
+Le jeu n'a pas l'air d'un jeu. Il a l'air d'**une feuille de match** : un document administratif, imprimé, tamponné, rempli à la main par quelqu'un qui a autre chose à faire. Fond de pelouse de nuit, papier crème au centre, et le jaune et le rouge n'apparaissent que quand un carton sort.
 
-Ce que ça écarte explicitement : le vert pelouse en aplat, les dégradés, les ombres portées douces, les cartes arrondies à 16 px, les illustrations de ballon, les silhouettes de joueurs, tout ce qui ressemble à une application de paris sportifs. Le vert existe dans le jeu, mais uniquement en texture, presque noir, et jamais comme couleur de marque.
+Ce que ça écarte explicitement : les dégradés, les ombres portées douces, les cartes arrondies à 16 px, les mascottes, tout ce qui ressemble à une application de paris sportifs.
+
+### Révision après première mise à l'écran (V0-11)
+
+Trois partis pris de la version d'origine ont été revus une fois les écrans réellement produits. Ils sont conservés ici parce que les raisons d'origine restaient bonnes — ce sont leurs conséquences qui ne l'étaient pas.
+
+**Le fond n'est plus noir mais vert de terrain.** L'intention était « fond de vestiaire » ; le résultat était un jeu inerte, sans vie. Le vert existait déjà dans la palette sous le nom `--vert-terrain`, avec la consigne « jamais en aplat visible ». Il est désormais la couleur principale, en profond et désaturé : c'est la pelouse de nuit sous les projecteurs, pas le vert d'un site de paris. Le garde-fou tient toujours — aucun vert vif, aucun dégradé, et le vert ne sert jamais de couleur d'action.
+
+**Le desktop se réagence.** La version d'origine posait un cadre de 420 px centré, « sans réagencement — assumé, ce n'est pas un jeu de bureau ». À l'écran, ça laissait les deux tiers de la largeur vides, ce qui ne se lit pas comme un parti pris mais comme un oubli. Au-delà de 900 px, les écrans passent donc en deux colonnes : le contenu à gauche, les actions dans un panneau détaché par un filet de touche à droite. Le téléphone, lui, ne bouge pas.
+
+**Le jeu porte des illustrations.** L'ancienne rédaction écartait « les illustrations de ballon, les silhouettes de joueurs ». Elle avait raison sur le décoratif, tort sur la lecture : douze murs de texte à la suite fatiguent. Chaque famille d'incident a donc son pictogramme, détaillé en §1bis.
+
+---
+
+## 1bis. Pictogrammes
+
+Neuf pictogrammes, un par famille d'incident, plus un sifflet qui sert de marque sur l'écran de coup d'envoi.
+
+Dessinés **au trait, en géométrie simple**, dans l'esprit des pictogrammes d'un formulaire de fédération ou d'un panneau de stade : une jambe en glissade et un ballon pour `tacle`, un bras écarté du corps pour `main`, un drapeau et une ligne pointillée pour `hors_jeu`, un banc et sa zone technique pour `banc`. Jamais de personnage expressif, jamais de mascotte, jamais d'emoji.
+
+Règles :
+
+- **Inline en SVG, en `currentColor`.** Aucun fichier, aucun poids réseau, et ils s'adaptent au papier comme au terrain.
+- **Trait de 1,75 px**, extrémités arrondies, sur une grille de 48 × 48. Aucun aplat, aucune couleur propre.
+- **Ils ne portent jamais une information seule.** Le pictogramme d'une famille est toujours accompagné de son libellé texte, comme les cartons (§7).
+- Trois emplacements : l'en-tête de la carte d'incident, l'écran de conséquence, et le bloc litigieux de la feuille de match.
 
 Test de validation de la DA : une capture d'écran isolée, sans logo, doit être reconnaissable. Si elle pourrait être une autre application, c'est raté.
 
@@ -13,20 +38,23 @@ Test de validation de la DA : une capture d'écran isolée, sans logo, doit êtr
 ## 2. Palette
 
 ```css
---noir-vestiaire:  #0C0C0D;   /* fond global */
---noir-profond:    #060607;   /* fond des écrans VAR et transitions */
+--terrain:         #10301F;   /* fond global : pelouse de nuit */
+--terrain-profond: #071710;   /* fond des écrans VAR et transitions */
+--terrain-clair:   #17422C;   /* panneaux latéraux, bandes de pelouse tondue */
+--ligne-terrain:   #1F5638;   /* traçage : filets de touche, séparateurs */
 --papier:          #F2EDE3;   /* la feuille de match, cartes d'incident */
 --papier-ombre:    #DED7C9;   /* filets, séparateurs sur papier */
 --encre:           #14140F;   /* texte sur papier */
 --encre-pale:      #6B675C;   /* texte secondaire sur papier */
---craie:           #E8E6E1;   /* texte sur noir */
---craie-pale:      #8A8880;   /* texte secondaire sur noir */
+--craie:           #EDF2EE;   /* texte sur terrain */
+--craie-pale:      #93A99C;   /* texte secondaire sur terrain */
 
 --jaune-carton:    #F2B705;   /* avertissement, jauge en alerte */
 --rouge-carton:    #C42B21;   /* expulsion, jauge critique, tampon */
---vert-terrain:    #0E2A1B;   /* texture de fond du match, jamais en aplat visible */
 --bleu-var:        #2F6DF2;   /* uniquement l'écran VAR, nulle part ailleurs */
 ```
+
+Le vert est la couleur principale, mais il ne sert **jamais** de couleur d'action : aucun bouton vert, aucun accent vert. Il est le terrain sur lequel le papier est posé, rien de plus. Une seule texture l'anime, les bandes de pelouse tondue, et seulement au-delà de 900 px de large.
 
 Règles d'usage :
 
@@ -34,7 +62,7 @@ Règles d'usage :
 - Le bouton primaire est du papier sur du noir, ou du noir sur du papier. Il n'y a pas de couleur d'accent d'interface, et c'est ce qui empêche le rendu « SaaS ».
 - Le bleu VAR n'apparaît que sur l'écran VAR, en filet de 2 px et en libellé. Il est là pour signaler qu'on a changé de monde pendant vingt secondes.
 
-Contraste : `--craie` sur `--noir-vestiaire` = 15,2:1. `--encre` sur `--papier` = 14,8:1. `--craie-pale` sur noir = 5,1:1, réservé aux textes non essentiels de 14 px et plus.
+Contraste : `--craie` sur `--terrain` = 12,4:1. `--encre` sur `--papier` = 14,8:1. `--craie-pale` sur terrain = 5,3:1, réservé aux textes non essentiels de 14 px et plus.
 
 ---
 
@@ -99,7 +127,7 @@ Total livré : **43,5 Ko** sur 46 autorisés.
 
 ## 4. Grille, densité, gestes
 
-Conçu pour un écran de **390 × 844** au pouce, en portrait. Le desktop est un cadre de 420 px de large centré sur fond noir texturé, sans réagencement — assumé, ce n'est pas un jeu de bureau.
+Conçu pour un écran de **390 × 844** au pouce, en portrait. Au-delà de **900 px de large**, la mise en page passe à deux colonnes : le contenu à gauche, les actions dans un panneau détaché par un filet de touche à droite, et les bandes de pelouse tondue occupent toute la largeur de l'écran. En dessous de 900 px, rien ne change : une colonne, au pouce.
 
 - Marge latérale : 20 px. Elle ne change jamais.
 - Gouttière verticale de base : 8 px, tout est un multiple.
@@ -107,7 +135,7 @@ Conçu pour un écran de **390 × 844** au pouce, en portrait. Le desktop est un
 - Hauteur d'un bouton d'option : 56 px, séparés par 1 px de `--papier-ombre` (ils forment un bloc, pas quatre cartes — c'est un bulletin de vote, pas un menu).
 - Rayon des angles : **2 px** partout. Pas 8, pas 12, pas 16. C'est du papier découpé.
 - Aucune ombre portée. Les plans se distinguent par la couleur, jamais par le flou.
-- Une seule texture : un grain fin (bruit SVG, opacité 3 %) appliqué au papier. Fichier inline, < 400 octets.
+- Deux textures, et pas une de plus : un grain fin (bruit SVG, opacité 3 %) sur le papier, et les bandes de pelouse tondue sur le terrain au-delà de 900 px. Les deux sont inline, sous 400 octets chacune.
 
 Gestes : tap uniquement. Pas de swipe, pas de long press, pas de glisser. Un joueur dans le métro, une main, pouce.
 

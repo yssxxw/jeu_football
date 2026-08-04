@@ -47,7 +47,7 @@
 		max-width: var(--cadre);
 		margin: 0 auto;
 		z-index: 5;
-		background: var(--noir-profond);
+		background: var(--terrain-profond);
 		display: flex;
 		flex-direction: column;
 		padding: 32px 32px calc(0px + env(safe-area-inset-bottom));

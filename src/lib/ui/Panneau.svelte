@@ -139,7 +139,7 @@
 		z-index: 9;
 		padding: 20px;
 		overflow-y: auto;
-		background: color-mix(in srgb, var(--noir-profond) 96%, transparent);
+		background: color-mix(in srgb, var(--terrain-profond) 96%, transparent);
 		color: var(--craie);
 		display: flex;
 		flex-direction: column;

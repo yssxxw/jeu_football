@@ -7,7 +7,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<meta name="theme-color" content="#0C0C0D" />
+	<meta name="theme-color" content="#10301F" />
 </svelte:head>
 
 <!-- Le desktop est le mobile dans un cadre, sans réagencement (06 §4). -->

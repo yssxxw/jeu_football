@@ -150,7 +150,7 @@ export function charger(
 	try {
 		analysee = JSON.parse(brut);
 	} catch {
-		analysee = null;
+		// analysee reste null : la donnée est illisible, on la met de côté plus bas.
 	}
 
 	const migree = analysee === null ? null : migrer(analysee);

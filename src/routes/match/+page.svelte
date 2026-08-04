@@ -6,6 +6,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { dev } from '$app/environment';
 	import { partie } from '$lib/etat/partie.svelte';
 	import { CONTROLE } from '$lib/moteur/equilibrage';
@@ -18,7 +19,7 @@
 
 	onMount(() => {
 		// Arrivée directe sur /match sans partie en cours : on repart de l'accueil.
-		if (partie.etat === null) goto('/');
+		if (partie.etat === null) goto(resolve('/'));
 	});
 
 	// Le critère d'acceptation de V0-6 demande de pouvoir comparer la jauge
@@ -37,7 +38,7 @@
 
 	function suivant() {
 		partie.continuer(new Date());
-		if (partie.resultat !== null) goto('/feuille');
+		if (partie.resultat !== null) goto(resolve('/feuille'));
 	}
 
 	// Navigation clavier sur desktop : 1 à 4 choisissent, Espace enchaîne (06 §7).
@@ -89,53 +90,61 @@
 			<p class="sans-chrono mono">Sans chrono</p>
 		{/if}
 
-		<main class="corps">
-			{#if partie.phase === 'incident' && partie.incidentCourant}
-				{@const programme = partie.incidentCourant}
+		<div class="deux-colonnes">
+			<main class="corps">
+				{#if partie.phase === 'incident' && partie.incidentCourant}
+					{@const programme = partie.incidentCourant}
 
-				{#if partie.chronoActif}
-					<Chrono
-						lectureMs={partie.lectureMs}
-						dureeMs={partie.chronoMs}
+					{#if partie.chronoActif}
+						<Chrono
+							lectureMs={partie.lectureMs}
+							dureeMs={partie.chronoMs}
+							cle={etat.index}
+							onExpiration={() => partie.decider(null)}
+						/>
+					{/if}
+
+					<CarteIncident
+						texte={programme.incident.texte}
+						famille={programme.incident.famille}
+						{tendu}
 						cle={etat.index}
-						onExpiration={() => partie.decider(null)}
+					/>
+				{:else if partie.incidentJoue && partie.optionJouee}
+					{@const prise = etat.decisions[etat.decisions.length - 1]}
+					<Consequence
+						libelle={partie.optionJouee.libelle}
+						consequence={partie.optionJouee.consequence}
+						famille={partie.incidentJoue.incident.famille}
+						severite={partie.optionJouee.severite}
+						nonDecidee={prise?.nonDecidee ?? false}
+						resolutionVar={prise?.var}
+						varEnAttente={etat.varEnAttente !== null}
+						matchArrete={etat.matchArrete}
 					/>
 				{/if}
+			</main>
 
-				<CarteIncident texte={programme.incident.texte} {tendu} cle={etat.index} />
-			{:else if partie.incidentJoue && partie.optionJouee}
-				{@const prise = etat.decisions[etat.decisions.length - 1]}
-				<Consequence
-					libelle={partie.optionJouee.libelle}
-					consequence={partie.optionJouee.consequence}
-					severite={partie.optionJouee.severite}
-					nonDecidee={prise?.nonDecidee ?? false}
-					resolutionVar={prise?.var}
-					varEnAttente={etat.varEnAttente !== null}
-					matchArrete={etat.matchArrete}
-				/>
-			{/if}
-		</main>
-
-		<footer class="options">
-			{#if partie.phase === 'incident' && partie.incidentCourant}
-				<ul>
-					{#each partie.incidentCourant.incident.options as option, index (index)}
-						<li>
-							<OptionBouton
-								libelle={option.libelle}
-								rang={index + 1}
-								onChoix={() => partie.decider(index)}
-							/>
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<button class="bouton-primaire" onclick={suivant}>
-					{etat.termine && etat.varEnAttente === null ? 'Feuille de match' : 'Suivant'}
-				</button>
-			{/if}
-		</footer>
+			<footer class="options">
+				{#if partie.phase === 'incident' && partie.incidentCourant}
+					<ul>
+						{#each partie.incidentCourant.incident.options as option, index (index)}
+							<li>
+								<OptionBouton
+									libelle={option.libelle}
+									rang={index + 1}
+									onChoix={() => partie.decider(index)}
+								/>
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<button class="bouton-primaire" onclick={suivant}>
+						{etat.termine && etat.varEnAttente === null ? 'Feuille de match' : 'Suivant'}
+					</button>
+				{/if}
+			</footer>
+		</div>
 	{/if}
 {:else}
 	<main class="corps"><p class="sans-chrono mono">Aucun match en cours.</p></main>
@@ -192,5 +201,13 @@
 	   sépare, et seulement entre elles (06 §4). */
 	.options li + li :global(button) {
 		border-top: 1px solid var(--papier-ombre);
+	}
+
+	/* Sur écran large, le panneau d'options est plein hauteur : sa bordure et
+	   son fond viennent de .deux-colonnes, il ne reste que le rembourrage. */
+	@media (min-width: 900px) {
+		.options {
+			padding: 32px;
+		}
 	}
 </style>

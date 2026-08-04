@@ -49,18 +49,26 @@
 /* ── Jetons ───────────────────────────────────────────────────────────────── */
 
 :root {
-	--noir-vestiaire: #0c0c0d;
-	--noir-profond: #060607;
+	/*
+	 * Le fond n'est plus noir mais vert de terrain profond. Le noir donnait un
+	 * jeu inerte, et le vert existait déjà dans la palette — il était simplement
+	 * interdit en aplat. Il l'est désormais, en profond et désaturé : c'est la
+	 * pelouse de nuit sous les projecteurs, pas le vert d'un site de paris.
+	 */
+	--terrain: #10301f; /* fond global */
+	--terrain-profond: #071710; /* écrans VAR et transitions */
+	--terrain-clair: #17422c; /* mobilier, filets, colonnes de bureau */
+	--ligne-terrain: #1f5638; /* traçage : lignes de touche, séparateurs */
+
 	--papier: #f2ede3;
 	--papier-ombre: #ded7c9;
 	--encre: #14140f;
 	--encre-pale: #6b675c;
-	--craie: #e8e6e1;
-	--craie-pale: #8a8880;
+	--craie: #edf2ee;
+	--craie-pale: #93a99c;
 
 	--jaune-carton: #f2b705;
 	--rouge-carton: #c42b21;
-	--vert-terrain: #0e2a1b;
 	--bleu-var: #2f6df2;
 
 	--titre: 'Anybody', 'Arial Narrow', system-ui, sans-serif;
@@ -71,7 +79,8 @@
 	--marge: 20px;
 	--gouttiere: 8px;
 	--rayon: 2px; /* Pas 8, pas 12, pas 16. C'est du papier découpé. */
-	--cadre: 420px; /* le desktop est le mobile dans un cadre */
+	--cadre: 420px; /* téléphone : une colonne au pouce */
+	--cadre-large: 1040px; /* écran large : deux colonnes, voir plus bas */
 
 	/* Durées de 06 §5. Normatives. */
 	--d-carte: 220ms;
@@ -129,7 +138,7 @@
 }
 
 html {
-	background: var(--noir-vestiaire);
+	background: var(--terrain);
 	/* Le pouce, jamais le zoom accidentel : on garde le pincement, on retire
 	   le double-tap qui déclencherait une décision. */
 	touch-action: manipulation;
@@ -138,7 +147,7 @@ html {
 
 body {
 	margin: 0;
-	background: var(--noir-vestiaire);
+	background: var(--terrain);
 	color: var(--craie);
 	font-family: var(--corps);
 	font-size: 19px;
@@ -180,8 +189,14 @@ button {
 	outline-offset: 2px;
 }
 
-/* ── Cadre : le desktop est le mobile dans un cadre ───────────────────────── */
+/* ── Cadre ────────────────────────────────────────────────────────────────── */
 
+/*
+ * Sur téléphone, une colonne au pouce, inchangée.
+ * Sur écran large, le cadre s'élargit et les écrans se réagencent en deux
+ * colonnes : un cadre de 420 px centré laissait deux tiers de l'écran vides,
+ * ce qui n'est pas un parti pris mais un manque.
+ */
 .cadre {
 	max-width: var(--cadre);
 	min-height: 100dvh;
@@ -189,7 +204,65 @@ button {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	background: var(--noir-vestiaire);
+	background: var(--terrain);
+}
+
+@media (min-width: 900px) {
+	:root {
+		--cadre: var(--cadre-large);
+		--marge: 40px;
+	}
+
+	/*
+	 * Pelouse tondue : bandes alternées très peu contrastées, posées sur le
+	 * body pour couvrir toute la largeur de l'écran. C'est ce qui occupe la
+	 * place sans rien ajouter à lire.
+	 */
+	body {
+		background-image: repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--terrain-clair) 40%, transparent) 0 88px,
+			transparent 88px 176px
+		);
+	}
+
+	.cadre {
+		background: none;
+	}
+}
+
+/* Grille à deux colonnes, utilisée par les écrans sur large. */
+.deux-colonnes {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+}
+
+@media (min-width: 900px) {
+	.deux-colonnes {
+		display: grid;
+		grid-template-columns: 1fr minmax(380px, 440px);
+		gap: 48px;
+		align-items: stretch;
+		padding: 0 var(--marge) 32px;
+	}
+
+	/* La colonne de droite est un panneau plein hauteur, détaché par un filet
+	   de touche : les actions ne flottent pas au milieu du vide. */
+	.deux-colonnes > :last-child {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		border-left: 1px solid var(--ligne-terrain);
+		background: color-mix(in srgb, var(--terrain-clair) 55%, transparent);
+	}
+
+	.deux-colonnes > :first-child {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
 }
 
 /* ── Papier ───────────────────────────────────────────────────────────────── */

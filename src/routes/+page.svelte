@@ -6,8 +6,10 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { partie } from '$lib/etat/partie.svelte';
 	import Panneau from '$lib/ui/Panneau.svelte';
+	import Pictogramme from '$lib/ui/Pictogramme.svelte';
 
 	let pret = $state(false);
 	let panneauOuvert = $state(false);
@@ -25,12 +27,12 @@
 
 	function coupDEnvoi() {
 		partie.demarrerMatchLibre();
-		goto('/match');
+		goto(resolve('/match'));
 	}
 
 	function matchDuJour() {
 		partie.demarrerMatchDuJour(new Date());
-		goto('/match');
+		goto(resolve('/match'));
 	}
 </script>
 
@@ -49,41 +51,47 @@
 	</p>
 {/if}
 
-<main class="accueil">
-	{#if pret && partie.match}
-		<p class="division mono">
-			{partie.nomDivision} · match {partie.matchsJoues + 1}
+<div class="deux-colonnes">
+	<main class="accueil">
+		{#if pret && partie.match}
+			<div class="sifflet" aria-hidden="true">
+				<Pictogramme famille="sifflet" taille={72} />
+			</div>
+
+			<p class="division mono">
+				{partie.nomDivision} · match {partie.matchsJoues + 1}
+			</p>
+
+			<!-- L'affiche occupe le centre optique. Les couleurs de club n'apparaissent
+			     que sous forme de deux filets de 3 px : c'est leur seule présence dans
+			     tout le jeu, et ça suffit (06 §6.1). -->
+			<div class="affiche">
+				<p class="club">{partie.match.domicile.nom}</p>
+				<span class="filet" style="background: {partie.match.domicile.couleurs[0]}"></span>
+
+				<p class="recoit">reçoit</p>
+
+				<p class="club">{partie.match.exterieur.nom}</p>
+				<span class="filet" style="background: {partie.match.exterieur.couleurs[0]}"></span>
+			</div>
+
+			<p class="contexte">{partie.match.contexte.texte}<br />Arbitre : vous.</p>
+		{:else}
+			<p class="contexte">Composition du match.</p>
+		{/if}
+	</main>
+
+	<footer class="pied">
+		<button class="bouton-primaire" onclick={coupDEnvoi} disabled={!pret}>Coup d'envoi</button>
+		<button class="bouton-tertiaire" onclick={matchDuJour} disabled={!pret}>
+			le match du jour →
+		</button>
+
+		<p class="licence mono">
+			LIC. {partie.sauvegarde.arbitreLocal.licence} · SÉRIE {partie.sauvegarde.quotidien.serie}
 		</p>
-
-		<!-- L'affiche occupe le centre optique. Les couleurs de club n'apparaissent
-		     que sous forme de deux filets de 3 px : c'est leur seule présence dans
-		     tout le jeu, et ça suffit (06 §6.1). -->
-		<div class="affiche">
-			<p class="club">{partie.match.domicile.nom}</p>
-			<span class="filet" style="background: {partie.match.domicile.couleurs[0]}"></span>
-
-			<p class="recoit">reçoit</p>
-
-			<p class="club">{partie.match.exterieur.nom}</p>
-			<span class="filet" style="background: {partie.match.exterieur.couleurs[0]}"></span>
-		</div>
-
-		<p class="contexte">{partie.match.contexte.texte}<br />Arbitre : vous.</p>
-	{:else}
-		<p class="contexte">Composition du match.</p>
-	{/if}
-</main>
-
-<footer class="pied">
-	<button class="bouton-primaire" onclick={coupDEnvoi} disabled={!pret}>Coup d'envoi</button>
-	<button class="bouton-tertiaire" onclick={matchDuJour} disabled={!pret}>
-		le match du jour →
-	</button>
-
-	<p class="licence mono">
-		LIC. {partie.sauvegarde.arbitreLocal.licence} · SÉRIE {partie.sauvegarde.quotidien.serie}
-	</p>
-</footer>
+	</footer>
+</div>
 
 <style>
 	.entete {
@@ -125,6 +133,12 @@
 		gap: 24px;
 		padding: 24px var(--marge);
 		text-align: center;
+	}
+
+	.sifflet {
+		display: flex;
+		justify-content: center;
+		color: var(--craie-pale);
 	}
 
 	.division {
@@ -184,5 +198,37 @@
 	button:disabled {
 		opacity: 0.7;
 		cursor: default;
+	}
+
+	/* Sur écran large, l'affiche occupe la colonne gauche et les actions la
+	   droite, alignées sur un filet de touche. */
+	@media (min-width: 900px) {
+		.accueil {
+			text-align: left;
+			padding: 0;
+		}
+
+		.sifflet {
+			justify-content: flex-start;
+		}
+
+		.affiche {
+			align-items: flex-start;
+		}
+
+		.club {
+			font-size: 46px;
+		}
+
+		.contexte {
+			margin: 0;
+			max-width: 34ch;
+			font-size: 19px;
+		}
+
+		.pied {
+			padding: 32px;
+			gap: 16px;
+		}
 	}
 </style>

@@ -76,7 +76,12 @@
 			<p class="mono etiquette">{etat.nom}</p>
 			<Jauge valeur={etat.controle} />
 			{#if premier}
-				<CarteIncident texte={premier.incident.texte} tendu={etat.tendu} cle={0} />
+				<CarteIncident
+					texte={premier.incident.texte}
+					famille={premier.incident.famille}
+					tendu={etat.tendu}
+					cle={0}
+				/>
 			{/if}
 		</section>
 	{/each}
@@ -86,6 +91,7 @@
 		<Consequence
 			libelle="Faute et expulsion"
 			consequence="Le rouge. Le banc explose. Le stade se réveille, et pas dans le bon sens."
+			famille="tacle"
 			severite={4}
 			nonDecidee={false}
 			resolutionVar={undefined}
@@ -99,6 +105,7 @@
 		<Consequence
 			libelle="Laisser jouer"
 			consequence="Le jeu continue trois secondes puis s'arrête tout seul."
+			famille="main"
 			severite={0}
 			nonDecidee={true}
 			resolutionVar={undefined}

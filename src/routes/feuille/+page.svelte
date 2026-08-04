@@ -3,6 +3,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { partie } from '$lib/etat/partie.svelte';
 	import FeuilleDeMatch from '$lib/ui/FeuilleDeMatch.svelte';
 
@@ -17,7 +18,7 @@
 	let detailOuvert = $state(false);
 
 	onMount(() => {
-		if (partie.resultat === null) goto('/');
+		if (partie.resultat === null) goto(resolve('/'));
 	});
 </script>
 
@@ -61,7 +62,7 @@
 
 	<footer class="actions">
 		<button class="bouton-primaire" disabled>Partager</button>
-		<button class="bouton-secondaire" onclick={() => goto('/')}>Rejouer</button>
+		<button class="bouton-secondaire" onclick={() => goto(resolve('/'))}>Rejouer</button>
 		<button class="bouton-tertiaire" onclick={() => (detailOuvert = !detailOuvert)}>
 			{detailOuvert ? 'Masquer le détail' : 'Les 12 décisions'}
 		</button>
@@ -131,5 +132,20 @@
 	button:disabled {
 		opacity: 0.5;
 		cursor: default;
+	}
+
+	/* Les actions suivent la largeur de la feuille : étalées sur tout l'écran,
+	   elles n'appartiendraient plus au même objet. */
+	@media (min-width: 900px) {
+		.actions {
+			max-width: 620px;
+			margin: 0 auto;
+			padding-bottom: 40px;
+		}
+
+		.detail {
+			max-width: 620px;
+			margin: 0 auto;
+		}
 	}
 </style>
