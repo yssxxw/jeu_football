@@ -7,12 +7,12 @@
 // Usage : npm run simuler [-- --parties=10000] [--division=6]
 
 import { CLUBS, CONTEXTES, INCIDENTS } from '../src/lib/contenu';
-import { appliquer, etatInitial, type Decision } from '../src/lib/moteur/appliquer';
+import { appliquer, etatInitial, resoudreVar, type Decision } from '../src/lib/moteur/appliquer';
 import { composer } from '../src/lib/moteur/composer';
 import { TABLE_DIVISIONS } from '../src/lib/moteur/equilibrage';
 import { noter } from '../src/lib/moteur/noter';
 import { alea, tirerDans, type Rand } from '../src/lib/moteur/prng';
-import type { Famille, Incident, Palier, Severite } from '../src/lib/moteur/types';
+import type { Famille, Incident, Palier, ResolutionVar, Severite } from '../src/lib/moteur/types';
 
 const CONTENU = { incidents: INCIDENTS, clubs: CLUBS, contextes: CONTEXTES };
 const PALIERS: Palier[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -33,6 +33,11 @@ interface Agent {
 	/** Médiane visée par docs/02-game-design.md §4, quand le dossier en donne une. */
 	cible: number | null;
 	decider(incident: Incident, index: number, rand: Rand, memoire: Memoire): Decision;
+	/**
+	 * Réponse à la vidéo. Par défaut on rectifie : c'est le choix d'un arbitre
+	 * qui regarde l'image, et maintenir est le geste le plus puni du jeu.
+	 */
+	repondreVar?(rand: Rand): ResolutionVar;
 }
 
 function indexJustes(incident: Incident): number[] {
@@ -61,7 +66,8 @@ const AGENTS: readonly Agent[] = [
 	{
 		nom: 'aléatoire uniforme',
 		cible: 35,
-		decider: (incident, _index, rand) => tirerDans(rand, tousLesIndex(incident))
+		decider: (incident, _index, rand) => tirerDans(rand, tousLesIndex(incident)),
+		repondreVar: (rand) => (rand() < 0.5 ? 'maintien' : 'rectification')
 	},
 	{
 		nom: 'connaît le foot',
@@ -159,6 +165,12 @@ function jouer(agent: Agent, palier: Palier, seed: string): { note: number; arre
 		const programme = match.incidents[etat.index];
 		if (programme === undefined) break;
 		etat = appliquer(etat, agent.decider(programme.incident, index, rand, memoire));
+
+		// Sans cette réponse, la partie ne peut plus avancer : appliquer() refuse
+		// toute décision tant que la vidéo attend.
+		if (etat.varEnAttente !== null) {
+			etat = resoudreVar(etat, agent.repondreVar?.(rand) ?? 'rectification');
+		}
 		index++;
 	}
 

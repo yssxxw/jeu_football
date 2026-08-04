@@ -10,9 +10,16 @@
 // peut pas décaler la suite d'une partie. C'est le même raisonnement que
 // l'ordre fixe de composer.ts, appliqué à un cas où l'ordre ne peut pas l'être.
 
-import { CONTROLE, EXPULSION_BONUS_BUT, PENALTY_PROBA } from './equilibrage';
+import { CONTROLE, EXPULSION_BONUS_BUT, PENALTY_PROBA, TABLE_DIVISIONS, VAR } from './equilibrage';
 import { alea } from './prng';
-import type { EtatPartie, Justesse, Match, Option } from './types';
+import type {
+	EtatPartie,
+	Incident,
+	JustesseEffective,
+	Match,
+	Option,
+	ResolutionVar
+} from './types';
 
 /** Index de l'option jouée, ou null quand le chrono a expiré (option par défaut). */
 export type Decision = number | null;
@@ -26,9 +33,34 @@ export function etatInitial(match: Match): EtatPartie {
 		buts: { domicile: 0, exterieur: 0 },
 		expulsions: 0,
 		nonDecidees: 0,
+		var: { quotaUtilise: 0, rectifications: 0, maintiens: 0 },
+		varEnAttente: null,
 		matchArrete: false,
 		termine: false
 	};
+}
+
+/**
+ * La VAR se déclenche-t-elle après cette décision ? docs/02-game-design.md §3.
+ *
+ * Toutes les conditions doivent être réunies. Le tirage est le dernier examiné :
+ * il vient d'une sous-seed dérivée de la seed du match et de l'index, comme les
+ * tirages de score, donc le tester conditionnellement ne décale rien.
+ */
+function varSeDeclenche(
+	etat: EtatPartie,
+	incident: Incident,
+	justesse: JustesseEffective
+): boolean {
+	const quota = TABLE_DIVISIONS[etat.match.division]?.quotaVar ?? 0;
+	if (etat.match.division < VAR.divisionMin) return false;
+	if (etat.var.quotaUtilise >= quota) return false;
+	if (!incident.var_eligible) return false;
+	if (incident.gravite < VAR.graviteMin) return false;
+	// On ne piège pas le joueur : une décision juste ne déclenche jamais la vidéo.
+	if (justesse > VAR.justesseDeclenchementMax) return false;
+
+	return alea(`${etat.match.seed}#var#${etat.index}`)() < VAR.probaDeclenchement;
 }
 
 function borner(valeur: number): number {
@@ -36,7 +68,11 @@ function borner(valeur: number): number {
 }
 
 /** Dérives passives de 02 §2, appliquées après le dControle de l'option. */
-function derives(justesses: readonly Justesse[], minute: number, temperament: number): number {
+function derives(
+	justesses: readonly JustesseEffective[],
+	minute: number,
+	temperament: number
+): number {
 	let delta = 0;
 
 	const deuxDernieres = justesses.slice(-2);
@@ -68,6 +104,8 @@ function optionParDefaut(options: readonly Option[]): number {
  */
 export function appliquer(etat: EtatPartie, decision: Decision): EtatPartie {
 	if (etat.termine) return etat;
+	// Tant que la vidéo attend une réponse, rien d'autre ne peut avancer.
+	if (etat.varEnAttente !== null) return etat;
 
 	const programme = etat.match.incidents[etat.index];
 	if (programme === undefined) throw new Error(`appliquer: aucun incident à l'index ${etat.index}`);
@@ -115,6 +153,10 @@ export function appliquer(etat: EtatPartie, decision: Decision): EtatPartie {
 	const index = etat.index + 1;
 	const matchArrete = controle <= CONTROLE.min;
 
+	// La VAR ne repasse pas sur un match déjà arrêté : le contrôle est tombé à
+	// zéro, la rencontre s'arrête à la minute courante, la vidéo n'a plus d'objet.
+	const declenche = !matchArrete && varSeDeclenche(etat, incident, option.justesse);
+
 	return {
 		match: etat.match,
 		index,
@@ -136,17 +178,77 @@ export function appliquer(etat: EtatPartie, decision: Decision): EtatPartie {
 		buts,
 		expulsions,
 		nonDecidees: etat.nonDecidees + (nonDecidee ? 1 : 0),
+		var: declenche ? { ...etat.var, quotaUtilise: etat.var.quotaUtilise + 1 } : etat.var,
+		varEnAttente: declenche ? etat.decisions.length : null,
 		matchArrete,
-		termine: matchArrete || index >= etat.match.incidents.length
+		termine: !declenche && (matchArrete || index >= etat.match.incidents.length)
 	};
 }
 
-/** Rejoue une suite complète de décisions. Utilisé par les tests et par le serveur. */
-export function appliquerToutes(match: Match, decisions: readonly Decision[]): EtatPartie {
+/**
+ * Répond à la vidéo. docs/02-game-design.md §3.
+ *
+ * Rectifier porte la justesse à 0,9 et coûte peu : vous vous êtes trompé, la
+ * vidéo a corrigé, ce n'est pas la même chose que d'avoir vu juste. Maintenir
+ * alors qu'on a tort est le choix le plus puni du jeu.
+ */
+export function resoudreVar(etat: EtatPartie, resolution: ResolutionVar): EtatPartie {
+	if (etat.varEnAttente === null) return etat;
+
+	const rang = etat.varEnAttente;
+	const prise = etat.decisions[rang];
+	if (prise === undefined) throw new Error(`resoudreVar: décision ${rang} introuvable`);
+
+	const reglages = resolution === 'rectification' ? VAR.rectification : VAR.maintien;
+	const controle = borner(etat.controle + reglages.dControle);
+	const matchArrete = etat.matchArrete || controle <= CONTROLE.min;
+
+	const decisions = [...etat.decisions];
+	decisions[rang] = {
+		...prise,
+		justesse: resolution === 'rectification' ? VAR.rectification.justesse : prise.justesse,
+		var: resolution
+	};
+
+	return {
+		...etat,
+		controle,
+		decisions,
+		var: {
+			...etat.var,
+			rectifications: etat.var.rectifications + (resolution === 'rectification' ? 1 : 0),
+			maintiens: etat.var.maintiens + (resolution === 'maintien' ? 1 : 0)
+		},
+		varEnAttente: null,
+		matchArrete,
+		termine: matchArrete || etat.index >= etat.match.incidents.length
+	};
+}
+
+/**
+ * Rejoue une suite complète de décisions. Utilisé par les tests et par le serveur.
+ *
+ * `varDecisions` est consommée dans l'ordre, une entrée par VAR déclenchée. Si
+ * elle est épuisée alors qu'une VAR attend, on maintient — c'est le choix le
+ * plus puni, donc jamais celui qu'un rejeu incomplet pourrait offrir à un
+ * tricheur.
+ */
+export function appliquerToutes(
+	match: Match,
+	decisions: readonly Decision[],
+	varDecisions: readonly ResolutionVar[] = []
+): EtatPartie {
 	let etat = etatInitial(match);
+	let prochaineVar = 0;
+
 	for (const decision of decisions) {
 		if (etat.termine) break;
 		etat = appliquer(etat, decision);
+
+		if (etat.varEnAttente !== null) {
+			etat = resoudreVar(etat, varDecisions[prochaineVar] ?? 'maintien');
+			prochaineVar++;
+		}
 	}
 	return etat;
 }

@@ -50,6 +50,10 @@
 		<li>Constance : {resultat.constance} ({resultat.incoherences} incohérence(s))</li>
 		<li>Cartons : {resultat.cartonsJaunes} jaune(s), {resultat.cartonsRouges} rouge(s)</li>
 		<li>Décisions non prises : {resultat.nonDecidees}</li>
+		<li>
+			Assistance vidéo : {resultat.rectificationsVar} rectification(s), {resultat.maintiensVarErrones}
+			maintien(s)
+		</li>
 		<li>Profil : {resultat.profilPresse}</li>
 	</ul>
 

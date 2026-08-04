@@ -129,6 +129,15 @@ export interface IncidentProgramme {
 
 // ── Partie en cours (appliquer.ts) ──
 
+/**
+ * Justesse effectivement retenue pour une décision. Celle de l'option choisie,
+ * sauf après une rectification VAR qui la porte à 0,9 — une valeur que le
+ * contenu ne peut pas porter : se tromper puis corriger n'est pas avoir vu juste.
+ */
+export type JustesseEffective = Justesse | 0.9;
+
+export type ResolutionVar = 'maintien' | 'rectification';
+
 export interface DecisionPrise {
 	incidentId: string;
 	minute: number;
@@ -136,10 +145,20 @@ export interface DecisionPrise {
 	gravite: Gravite;
 	optionIndex: number;
 	severite: Severite;
-	justesse: Justesse;
+	justesse: JustesseEffective;
 	dControle: number;
 	/** Vraie quand le chrono a expiré et que l'option par défaut a été jouée. */
 	nonDecidee: boolean;
+	/** Renseignée quand la VAR est passée sur cet incident. */
+	var?: ResolutionVar;
+}
+
+export interface EtatVar {
+	/** Nombre de VAR déjà déclenchées, à comparer au quota de la division. */
+	quotaUtilise: number;
+	rectifications: number;
+	/** Maintiens : la VAR est toujours déclenchée sur une erreur, ils sont donc tous erronés. */
+	maintiens: number;
 }
 
 export interface EtatPartie {
@@ -152,6 +171,12 @@ export interface EtatPartie {
 	/** Joueurs expulsés, toutes équipes confondues (02 §6 étape 5). */
 	expulsions: number;
 	nonDecidees: number;
+	var: EtatVar;
+	/**
+	 * Index dans `decisions` de l'incident sur lequel la VAR attend une réponse.
+	 * Tant qu'il n'est pas null, la partie ne peut ni avancer ni se terminer.
+	 */
+	varEnAttente: number | null;
 	/** Contrôle tombé à 0 : le match s'arrête à la minute courante. */
 	matchArrete: boolean;
 	termine: boolean;
@@ -170,6 +195,8 @@ export interface Resultat {
 	cartonsJaunes: number;
 	cartonsRouges: number;
 	nonDecidees: number;
+	rectificationsVar: number;
+	maintiensVarErrones: number;
 	matchArrete: boolean;
 	/** Partie jouée sans chrono : exclue du classement, par honnêteté (02 §8.1). */
 	horsClassement: boolean;

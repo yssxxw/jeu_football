@@ -4,6 +4,7 @@
 	import { dev } from '$app/environment';
 	import { partie } from '$lib/etat/partie.svelte';
 	import Chrono from '$lib/ui/Chrono.svelte';
+	import EcranVar from '$lib/ui/EcranVar.svelte';
 
 	onMount(() => {
 		// Arrivée directe sur /match sans partie en cours : on repart de l'accueil.
@@ -64,6 +65,8 @@
 				</li>
 			{/each}
 		</ul>
+	{:else if partie.phase === 'var' && partie.blocVar}
+		<EcranVar bloc={partie.blocVar} onResolution={(choix) => partie.repondreVar(choix)} />
 	{:else if partie.incidentJoue && partie.optionJouee}
 		{@const programme = partie.incidentJoue}
 		{@const prise = partie.etat.decisions[partie.etat.decisions.length - 1]}
@@ -72,6 +75,16 @@
 
 		{#if prise?.nonDecidee}
 			<p>Décision non prise. L'option par défaut a été appliquée.</p>
+		{/if}
+
+		{#if prise?.var === 'rectification'}
+			<p>Décision rectifiée après visionnage.</p>
+		{:else if prise?.var === 'maintien'}
+			<p>Décision maintenue après visionnage.</p>
+		{/if}
+
+		{#if partie.etat.varEnAttente !== null}
+			<p>L'assistance vidéo revient sur cette action.</p>
 		{/if}
 
 		{#if partie.etat.matchArrete}

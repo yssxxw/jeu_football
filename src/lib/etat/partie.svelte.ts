@@ -4,13 +4,13 @@
 // le moteur, lui, reçoit toujours le temps en argument.
 
 import { CLUBS, CONTEXTES, INCIDENTS } from '$lib/contenu';
-import { appliquer, etatInitial, type Decision } from '$lib/moteur/appliquer';
+import { appliquer, etatInitial, resoudreVar, type Decision } from '$lib/moteur/appliquer';
 import { dureeLectureMs } from '$lib/moteur/chrono';
 import { composer } from '$lib/moteur/composer';
 import { TABLE_DIVISIONS } from '$lib/moteur/equilibrage';
 import { divisionApres, noter } from '$lib/moteur/noter';
 import { seedDuJour, seedLibre } from '$lib/moteur/seed';
-import type { EtatPartie, Palier, Resultat } from '$lib/moteur/types';
+import type { EtatPartie, Palier, ResolutionVar, Resultat } from '$lib/moteur/types';
 import {
 	charger,
 	enregistrer,
@@ -26,7 +26,7 @@ const CONTENU = { incidents: INCIDENTS, clubs: CLUBS, contextes: CONTEXTES };
 /** Division du match du jour : la même pour toute la planète (02 §7). */
 const DIVISION_MATCH_DU_JOUR: Palier = 6;
 
-export type PhaseEcran = 'incident' | 'consequence';
+export type PhaseEcran = 'incident' | 'consequence' | 'var';
 
 class Partie {
 	private stockage: StockageBrut | null = null;
@@ -134,6 +134,17 @@ class Partie {
 		this.estMatchDuJour = true;
 	}
 
+	/** Bloc VAR de l'incident sur lequel la vidéo attend une réponse. */
+	readonly blocVar = $derived.by(() => {
+		if (this.etat === null || this.etat.varEnAttente === null) return null;
+		const prise = this.etat.decisions[this.etat.varEnAttente];
+		if (prise === undefined) return null;
+		return (
+			this.etat.match.incidents.find(({ incident }) => incident.id === prise.incidentId)?.incident
+				.var ?? null
+		);
+	});
+
 	/** Joue une décision. `null` correspond à l'expiration du chrono. */
 	decider(decision: Decision): void {
 		if (this.etat === null || this.etat.termine) return;
@@ -143,9 +154,24 @@ class Partie {
 		this.phase = 'consequence';
 	}
 
-	/** Passe de l'écran de conséquence à l'incident suivant, ou termine le match. */
+	/** Répond à la vidéo. Sans réponse, la partie ne peut pas avancer. */
+	repondreVar(resolution: ResolutionVar): void {
+		if (this.etat === null || this.etat.varEnAttente === null) return;
+		this.etat = resoudreVar(this.etat, resolution);
+		// On repasse par la conséquence : la vidéo vient de changer la décision.
+		this.phase = 'consequence';
+	}
+
+	/** Passe de l'écran de conséquence à la suite : vidéo, incident suivant, ou fin. */
 	continuer(maintenant: Date): void {
 		if (this.etat === null) return;
+
+		// La vidéo s'intercale entre la conséquence et l'incident suivant.
+		if (this.etat.varEnAttente !== null) {
+			this.phase = 'var';
+			return;
+		}
+
 		if (this.etat.termine) {
 			this.terminer(maintenant);
 			return;

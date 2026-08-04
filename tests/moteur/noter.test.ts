@@ -53,6 +53,8 @@ function etat(partiel: Partial<EtatPartie> & { decisions: DecisionPrise[] }): Et
 		buts: partiel.buts ?? { domicile: 0, exterieur: 0 },
 		expulsions: partiel.expulsions ?? 0,
 		nonDecidees: partiel.nonDecidees ?? 0,
+		var: partiel.var ?? { quotaUtilise: 0, rectifications: 0, maintiens: 0 },
+		varEnAttente: null,
 		matchArrete: partiel.matchArrete ?? false,
 		termine: true
 	};

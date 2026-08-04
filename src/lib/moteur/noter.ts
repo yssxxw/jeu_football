@@ -90,10 +90,15 @@ export function noter(etat: EtatPartie, options: OptionsNotation = {}): Resultat
 		POIDS_NOTE.controle * etat.controle +
 		POIDS_NOTE.constance * constance;
 
-	// La VAR arrive en V0-10 : ses deux malus valent 0 tant qu'elle n'existe pas.
-	const malus = chrono
+	const malusNonDecisions = chrono
 		? Math.min(MALUS.plafondNonDecisions, MALUS.parNonDecision * etat.nonDecidees)
 		: 0;
+
+	// La VAR ne se déclenche que sur une erreur : tout maintien est erroné.
+	const malus =
+		malusNonDecisions +
+		MALUS.parRectificationVar * etat.var.rectifications +
+		MALUS.parMaintienVarErrone * etat.var.maintiens;
 
 	let note = Math.round(Math.min(100, Math.max(0, noteBrute - malus)));
 	if (etat.matchArrete) note = Math.min(note, PLAFOND_NOTE_MATCH_ARRETE);
@@ -109,6 +114,8 @@ export function noter(etat: EtatPartie, options: OptionsNotation = {}): Resultat
 		cartonsJaunes: etat.decisions.filter((decision) => decision.severite === 2).length,
 		cartonsRouges: etat.decisions.filter((decision) => decision.severite >= 3).length,
 		nonDecidees: etat.nonDecidees,
+		rectificationsVar: etat.var.rectifications,
+		maintiensVarErrones: etat.var.maintiens,
 		matchArrete: etat.matchArrete,
 		horsClassement: !chrono,
 		buts: { ...etat.buts }

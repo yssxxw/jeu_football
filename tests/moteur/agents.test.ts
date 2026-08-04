@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { CLUBS, CONTEXTES, INCIDENTS } from '../../src/lib/contenu';
-import { appliquer, etatInitial, type Decision } from '../../src/lib/moteur/appliquer';
+import { appliquer, etatInitial, resoudreVar, type Decision } from '../../src/lib/moteur/appliquer';
 import { composer } from '../../src/lib/moteur/composer';
 import { noter } from '../../src/lib/moteur/noter';
 import { alea, tirerDans, type Rand } from '../../src/lib/moteur/prng';
@@ -55,6 +55,8 @@ function medianeDe(decideur: Decideur, palier: Palier): number {
 			const programme = match.incidents[etat.index];
 			if (programme === undefined) break;
 			etat = appliquer(etat, decideur(programme.incident, index, rand));
+			// La vidéo bloque la partie tant qu'on ne lui répond pas.
+			if (etat.varEnAttente !== null) etat = resoudreVar(etat, 'rectification');
 			index++;
 		}
 		notes.push(noter(etat, { chrono: true }).note);
