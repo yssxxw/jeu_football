@@ -1,77 +1,135 @@
 <script lang="ts">
+	// Feuille de match. docs/06 §6.5.
+
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { partie } from '$lib/etat/partie.svelte';
+	import FeuilleDeMatch from '$lib/ui/FeuilleDeMatch.svelte';
 
 	const LIBELLE_JUSTESSE = new Map([
 		[1, 'juste'],
+		[0.9, 'rectifiée'],
 		[0.7, 'défendable'],
 		[0.4, 'discutable'],
 		[0, 'erreur']
 	]);
 
+	let detailOuvert = $state(false);
+
 	onMount(() => {
 		if (partie.resultat === null) goto('/');
 	});
-
-	function rejouer() {
-		goto('/');
-	}
 </script>
 
 <svelte:head><title>Feuille de match — SIFFLET</title></svelte:head>
 
 {#if partie.resultat && partie.match && partie.etat}
-	{@const resultat = partie.resultat}
-	<h1>Feuille de match</h1>
+	<main class="page">
+		<FeuilleDeMatch
+			match={partie.match}
+			resultat={partie.resultat}
+			decisions={partie.etat.decisions}
+			licence={partie.sauvegarde.arbitreLocal.licence}
+			divisionAvant={partie.divisionAvantMatch}
+			divisionApres={partie.division}
+			cle={partie.matchsJoues}
+		/>
 
-	<p>
-		{partie.match.domicile.nom}
-		{resultat.buts.domicile} – {resultat.buts.exterieur}
-		{partie.match.exterieur.nom}
-	</p>
+		{#if detailOuvert}
+			<!-- Le seul endroit du jeu où on explique (02 §1 écran 4). -->
+			<section class="detail papier">
+				<h2 class="mono">Les {partie.etat.decisions.length} décisions</h2>
+				<ol>
+					{#each partie.etat.decisions as decision (decision.incidentId)}
+						<li>
+							<span class="mono minute">{decision.minute}'</span>
+							<span class="libelle">
+								{partie.match.incidents.find((p) => p.incident.id === decision.incidentId)?.incident
+									.options[decision.optionIndex]?.libelle}
+							</span>
+							<span class="mono verdict">
+								{LIBELLE_JUSTESSE.get(decision.justesse)}{decision.nonDecidee
+									? ' · non décidée'
+									: ''}
+							</span>
+						</li>
+					{/each}
+				</ol>
+			</section>
+		{/if}
+	</main>
 
-	<p><strong>{resultat.note} / 100</strong></p>
-	<p>{resultat.mention}</p>
-
-	{#if resultat.matchArrete}
-		<p>Le match n'est pas allé au bout.</p>
-	{/if}
-	{#if resultat.horsClassement}
-		<p>SANS CHRONO — hors classement.</p>
-	{/if}
-	{#if partie.estMatchDuJour}
-		<p>Match du jour.</p>
-	{/if}
-
-	<ul>
-		<li>Justesse : {resultat.justesse}</li>
-		<li>Contrôle final : {resultat.controle}</li>
-		<li>Constance : {resultat.constance} ({resultat.incoherences} incohérence(s))</li>
-		<li>Cartons : {resultat.cartonsJaunes} jaune(s), {resultat.cartonsRouges} rouge(s)</li>
-		<li>Décisions non prises : {resultat.nonDecidees}</li>
-		<li>
-			Assistance vidéo : {resultat.rectificationsVar} rectification(s), {resultat.maintiensVarErrones}
-			maintien(s)
-		</li>
-		<li>Profil : {resultat.profilPresse}</li>
-	</ul>
-
-	<p>Division : {partie.nomDivision}</p>
-
-	<h2>Les {partie.etat.decisions.length} décisions</h2>
-	<ol>
-		{#each partie.etat.decisions as decision (decision.incidentId)}
-			<li>
-				{decision.minute}' — {decision.famille} —
-				{partie.match.incidents.find((p) => p.incident.id === decision.incidentId)?.incident
-					.options[decision.optionIndex]?.libelle}
-				— {LIBELLE_JUSTESSE.get(decision.justesse)}{decision.nonDecidee ? ' (non décidée)' : ''}
-			</li>
-		{/each}
-	</ol>
-
-	<p><button onclick={rejouer}>Rejouer</button></p>
+	<footer class="actions">
+		<button class="bouton-primaire" disabled>Partager</button>
+		<button class="bouton-secondaire" onclick={() => goto('/')}>Rejouer</button>
+		<button class="bouton-tertiaire" onclick={() => (detailOuvert = !detailOuvert)}>
+			{detailOuvert ? 'Masquer le détail' : 'Les 12 décisions'}
+		</button>
+	</footer>
 {:else}
-	<p>Aucune feuille de match.</p>
+	<main class="page"><p class="mono">Aucune feuille de match.</p></main>
 {/if}
+
+<style>
+	.page {
+		flex: 1;
+		padding: 16px 0 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.detail {
+		margin: 0 16px;
+		padding: 20px;
+	}
+
+	.detail h2 {
+		font-size: 11px;
+		color: var(--encre-pale);
+		margin-bottom: 12px;
+	}
+
+	.detail ol {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.detail li {
+		display: grid;
+		grid-template-columns: 40px 1fr;
+		gap: 4px 10px;
+	}
+
+	.minute {
+		font-size: 11px;
+		color: var(--encre-pale);
+	}
+
+	.libelle {
+		font-family: var(--titre);
+		font-stretch: 92%;
+		font-size: 15px;
+	}
+
+	.verdict {
+		grid-column: 2;
+		font-size: 11px;
+		color: var(--encre-pale);
+		text-transform: none;
+	}
+
+	.actions {
+		padding: 0 16px calc(20px + env(safe-area-inset-bottom));
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		align-items: center;
+	}
+
+	button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+</style>

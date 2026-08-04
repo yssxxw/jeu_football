@@ -21,6 +21,13 @@ async function restant(page: Page): Promise<number> {
 	return Number(valeur);
 }
 
+/** Ouvre le panneau et décoche le chrono. Le réglage vit là depuis V0-11. */
+async function desactiverLeChrono(page: Page): Promise<void> {
+	await page.getByRole('button', { name: 'Réglages' }).click();
+	await page.getByLabel('Chrono').uncheck();
+	await page.getByRole('button', { name: 'Fermer', exact: true }).click();
+}
+
 async function phase(page: Page): Promise<string | null> {
 	return page.locator(CHRONO).first().getAttribute('data-phase');
 }
@@ -95,7 +102,8 @@ test("à l'expiration, l'option par défaut est jouée et comptée comme non dé
 	// Et la feuille de match doit compter cette décision comme non prise.
 	await page.getByRole('button', { name: /Suivant|Feuille de match/ }).click();
 	await jouerJusquALaFeuille(page);
-	await expect(page.getByText(/Décisions non prises : [1-9]/)).toBeVisible();
+	await page.getByRole('button', { name: 'Les 12 décisions' }).click();
+	await expect(page.getByText(/non décidée/).first()).toBeVisible();
 });
 
 test('passer en arrière-plan 30 s ne consomme pas de temps', async ({ page }) => {
@@ -129,20 +137,22 @@ test('le réglage sans chrono retire l’anneau et marque la partie hors classem
 	page
 }) => {
 	await page.goto('/');
-	await page.getByLabel(/Jouer sans chrono/).check();
+	await desactiverLeChrono(page);
 	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
 
 	await expect(page.locator(CHRONO)).toHaveCount(0);
 
 	await jouerJusquALaFeuille(page);
-	await expect(page.getByText('SANS CHRONO — hors classement.')).toBeVisible();
-	await expect(page.getByText('Décisions non prises : 0')).toBeVisible();
+	await expect(page.getByText('Sans chrono — hors classement')).toBeVisible();
+	await page.getByRole('button', { name: 'Les 12 décisions' }).click();
+	await expect(page.getByText(/non décidée/)).toHaveCount(0);
 });
 
 test('le réglage sans chrono survit à un rechargement', async ({ page }) => {
 	await page.goto('/');
-	await page.getByLabel(/Jouer sans chrono/).check();
+	await desactiverLeChrono(page);
 
 	await page.goto('/');
-	await expect(page.getByLabel(/Jouer sans chrono/)).toBeChecked();
+	await page.getByRole('button', { name: 'Réglages' }).click();
+	await expect(page.getByLabel('Chrono')).not.toBeChecked();
 });

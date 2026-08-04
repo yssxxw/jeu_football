@@ -13,6 +13,8 @@ import { seedDuJour, seedLibre } from '$lib/moteur/seed';
 import type { EtatPartie, Palier, ResolutionVar, Resultat } from '$lib/moteur/types';
 import {
 	charger,
+	CLE,
+	CLE_CORROMPUE,
 	enregistrer,
 	MAX_INCIDENTS_RECENTS,
 	sauvegardeVierge,
@@ -42,6 +44,8 @@ class Partie {
 	/** Index de l'option qui vient d'être jouée, pour l'écran de conséquence. */
 	dernierChoix = $state<number | null>(null);
 	estMatchDuJour = $state(false);
+	/** Division d'avant le match, pour que la feuille dise montée, maintien ou descente. */
+	divisionAvantMatch = $state<Palier>(0);
 
 	readonly division = $derived(this.sauvegarde.progression.division);
 	readonly matchsJoues = $derived(this.sauvegarde.progression.matchsJoues);
@@ -65,6 +69,17 @@ class Partie {
 
 	readonly controle = $derived(this.etat?.controle ?? 0);
 	readonly numeroIncident = $derived(this.etat === null ? 0 : this.etat.index + 1);
+
+	/**
+	 * Minute affichée. Celle de l'incident en cours, ou celle du dernier joué
+	 * pendant la conséquence. Aucune indication du type « 7/12 » n'est exposée :
+	 * le joueur ne doit pas compter les incidents restants (06 §6.2).
+	 */
+	readonly minuteCourante = $derived(
+		this.phase === 'incident'
+			? (this.incidentCourant?.minute ?? this.incidentJoue?.minute ?? 0)
+			: (this.incidentJoue?.minute ?? 0)
+	);
 	readonly nomDivision = $derived(TABLE_DIVISIONS[this.division]?.nom ?? '');
 
 	/**
@@ -192,6 +207,23 @@ class Partie {
 		this.ecrire(maintenant);
 	}
 
+	/**
+	 * Efface la progression à la demande du joueur (06 §6.7).
+	 * L'ancienne sauvegarde est d'abord recopiée : même effacée volontairement,
+	 * une progression ne disparaît pas sans copie de secours.
+	 */
+	effacerProgression(maintenant: Date): void {
+		if (this.stockage !== null) {
+			const ancienne = this.stockage.obtenir(CLE);
+			if (ancienne !== null) this.stockage.poser(CLE_CORROMPUE, ancienne);
+		}
+		this.sauvegarde = sauvegardeVierge(maintenant, {
+			mouvementReduit: this.sauvegarde.reglages.mouvementReduit
+		});
+		this.ecrire(maintenant);
+		this.composerAffiche();
+	}
+
 	private ecrire(maintenant: Date): void {
 		if (this.stockage === null) return;
 		this.sauvegarde = enregistrer(this.stockage, this.sauvegarde, maintenant);
@@ -204,6 +236,7 @@ class Partie {
 		this.resultat = resultat;
 
 		const progression = this.sauvegarde.progression;
+		this.divisionAvantMatch = progression.division;
 		// Le match du jour se joue en division 6 sans faire bouger la progression.
 		const division = this.estMatchDuJour
 			? progression.division

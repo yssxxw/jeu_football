@@ -17,6 +17,20 @@ const INCIDENTS_PAR_COUPLE_MIN = 8;
 // le contenu complet : bloquant à partir de V0-13, simple avertissement avant.
 const COUVERTURE_BLOQUANTE = process.env.COUVERTURE_BLOQUANTE === '1';
 
+/**
+ * Jeu de caractères avec lequel static/fonts/*.woff2 a été sous-ensemblé.
+ * Toute modification ici oblige à régénérer les polices, et inversement.
+ * Latin de base imprimable, plus ce que le français exige, plus la ponctuation
+ * typographique française. Voir docs/06-ui-direction-artistique.md §3.
+ */
+const CARACTERES_DESSINABLES = new Set([
+	...Array.from({ length: 0x7f - 0x20 }, (_, index) => String.fromCodePoint(0x20 + index)),
+	...'ÀÂÄÆÇÈÉÊËÎÏÔÖŒÙÛÜŸÑÁÍÓÚ',
+	...'àâäæçèéêëîïôöœùûüÿñáíóú',
+	...'«»""‘’–—…·°€%  ',
+	'\n'
+]);
+
 const erreurs: string[] = [];
 const avertissements: string[] = [];
 const ecarts: string[] = [];
@@ -159,21 +173,36 @@ for (const incident of incidents) {
 		erreur(id, 'point d’exclamation hors parole rapportée dans texte');
 	}
 
-	// ── Invariant 9 — aucun caractère hors latin étendu (attrape les emojis) ──
+	// ── Invariant 9 — aucun caractère que les polices ne savent pas dessiner ──
+	// Plus fort que « hors latin étendu » : on vérifie contre le jeu exact avec
+	// lequel static/fonts/*.woff2 a été sous-ensemblé. Un caractère absent sort
+	// en police de repli, ce qui se voit immédiatement au milieu d'un mot.
 	const chaines = [
 		incident.texte,
-		...options.flatMap((option) => [option.libelle, option.consequence])
+		...options.flatMap((option) => [option.libelle, option.consequence]),
+		...(incident.var === undefined
+			? []
+			: [
+					incident.var.revelation,
+					incident.var.maintien.consequence,
+					incident.var.rectification.libelleCorrige,
+					incident.var.rectification.consequence
+				])
 	];
 	for (const chaine of chaines) {
 		if (/\p{Extended_Pictographic}/u.test(chaine)) {
 			erreur(id, 'emoji détecté');
 			break;
 		}
-		const interdit = [...chaine].find(
-			(caractere) => !/[\p{Script=Latin}\p{Nd}\p{P}\p{Zs}\s%°]/u.test(caractere)
-		);
+		const interdit = [...chaine].find((caractere) => !CARACTERES_DESSINABLES.has(caractere));
 		if (interdit !== undefined) {
-			erreur(id, `caractère hors latin étendu : ${JSON.stringify(interdit)}`);
+			erreur(
+				id,
+				`caractère ${JSON.stringify(interdit)} (U+${(interdit.codePointAt(0) ?? 0)
+					.toString(16)
+					.toUpperCase()
+					.padStart(4, '0')}) absent des polices livrées`
+			);
 			break;
 		}
 	}

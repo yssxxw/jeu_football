@@ -68,6 +68,20 @@ Usages : libellés d'options de décision (14 px, majuscules, `letter-spacing: 0
 
 **Interdits explicites** : Inter, Roboto, Montserrat, Poppins, Open Sans, Lato, Manrope, DM Sans, et toute police système en usage principal.
 
+### Écarts constatés à l'implémentation (V0-11)
+
+Le budget de 46 Ko pour trois familles variables est très serré : les trois sous-ensembles latins bruts de Google Fonts pèsent 227 Ko. Ils ont donc été instanciés avec `fontTools` avant sous-ensemblage. Trois conséquences, toutes assumées :
+
+| Famille | Ce qui est livré | Écart |
+|---|---|---|
+| Anybody | axe `wdth` 78→138 conservé, `wght` figé à **700** | le §3 demande `wght: 800` pour la note. L'axe de chasse est ce qui fait l'identité d'Anybody ; le garder coûtait 12 Ko de plus que de figer la graisse, et `wght: 800` partout alourdirait les noms de clubs et les lignes de 17 px que le dossier ne demande pas en gras. |
+| Newsreader | `opsz` figé à 20, `wght` figé à 400 | l'italique n'est pas livrée comme fichier séparé : les mentions et lignes de presse utilisent l'italique synthétique du navigateur. À reprendre si le rendu déplaît. |
+| Martian Mono | `wdth` figé à 87,5 ; `wght` 400→700 conservé | aucun. |
+
+Total livré : **43,5 Ko** sur 46 autorisés.
+
+**Le caractère `ᵉ` n'existe dans aucune des trois polices.** Le contenu écrivait « 78ᵉ », qui sortait en police de repli au milieu d'un mot. Les huit occurrences sont passées en « 78e », et `valider-contenu` vérifie désormais que chaque caractère du contenu appartient au jeu avec lequel les polices ont été sous-ensemblées. Modifier ce jeu oblige à régénérer les polices, et inversement.
+
 ### Repli et substitution
 
 ```css

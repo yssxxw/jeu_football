@@ -1,1 +1,279 @@
 @import 'tailwindcss';
+
+/*
+ * Direction artistique. docs/06-ui-direction-artistique.md.
+ *
+ * Le jeu n'a pas l'air d'un jeu : il a l'air d'une feuille de match. Fond noir
+ * de vestiaire, papier crème au centre, et le jaune et le rouge n'apparaissent
+ * que quand un carton sort.
+ */
+
+/* ── Polices, auto-hébergées, sous-ensemblées latin + français ────────────── */
+
+@font-face {
+	font-family: 'Anybody';
+	src: url('/fonts/anybody.woff2') format('woff2');
+	font-weight: 700;
+	font-stretch: 78% 138%;
+	font-style: normal;
+	/* optional : un chiffre qui change de chasse en cours d'animation est
+	   intolérable, mieux vaut ne pas l'avoir au premier chargement (06 §3). */
+	font-display: optional;
+}
+
+@font-face {
+	font-family: 'Newsreader';
+	src: url('/fonts/newsreader.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Martian Mono';
+	src: url('/fonts/martian-mono.woff2') format('woff2');
+	font-weight: 400 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+/* Repli métrique : avec ces ajustements, la substitution ne décale rien. */
+@font-face {
+	font-family: 'Newsreader-repli';
+	src: local('Georgia'), local('Times New Roman'), local('Liberation Serif');
+	size-adjust: 96%;
+	ascent-override: 92%;
+	descent-override: 24%;
+}
+
+/* ── Jetons ───────────────────────────────────────────────────────────────── */
+
+:root {
+	--noir-vestiaire: #0c0c0d;
+	--noir-profond: #060607;
+	--papier: #f2ede3;
+	--papier-ombre: #ded7c9;
+	--encre: #14140f;
+	--encre-pale: #6b675c;
+	--craie: #e8e6e1;
+	--craie-pale: #8a8880;
+
+	--jaune-carton: #f2b705;
+	--rouge-carton: #c42b21;
+	--vert-terrain: #0e2a1b;
+	--bleu-var: #2f6df2;
+
+	--titre: 'Anybody', 'Arial Narrow', system-ui, sans-serif;
+	--corps: 'Newsreader', 'Newsreader-repli', Georgia, serif;
+	--interface: 'Martian Mono', ui-monospace, 'Courier New', monospace;
+
+	/* Grille : marge latérale invariable, gouttière de 8 px, tout en multiples. */
+	--marge: 20px;
+	--gouttiere: 8px;
+	--rayon: 2px; /* Pas 8, pas 12, pas 16. C'est du papier découpé. */
+	--cadre: 420px; /* le desktop est le mobile dans un cadre */
+
+	/* Durées de 06 §5. Normatives. */
+	--d-carte: 220ms;
+	--d-bouton: 90ms;
+	--d-carton: 180ms;
+	--d-jauge: 320ms;
+	--d-flash: 120ms;
+	--d-incident: 160ms;
+	--d-var: 400ms;
+	--d-note: 700ms;
+	--d-tampon: 260ms;
+
+	--c-carte: cubic-bezier(0.16, 1, 0.3, 1);
+	--c-carton: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--c-jauge: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/*
+ * Mouvement réduit : toutes les animations deviennent un fondu de 90 ms.
+ * On neutralise les durées à la racine plutôt que de désactiver au cas par cas,
+ * pour qu'une animation ajoutée plus tard soit couverte sans qu'on y pense.
+ */
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--d-carte: 90ms;
+		--d-bouton: 90ms;
+		--d-carton: 90ms;
+		--d-jauge: 90ms;
+		--d-flash: 90ms;
+		--d-incident: 90ms;
+		--d-var: 90ms;
+		--d-note: 90ms;
+		--d-tampon: 90ms;
+
+		--c-carte: linear;
+		--c-carton: linear;
+		--c-jauge: linear;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 90ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 90ms !important;
+		transition-property: opacity !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	background: var(--noir-vestiaire);
+	/* Le pouce, jamais le zoom accidentel : on garde le pincement, on retire
+	   le double-tap qui déclencherait une décision. */
+	touch-action: manipulation;
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--noir-vestiaire);
+	color: var(--craie);
+	font-family: var(--corps);
+	font-size: 19px;
+	line-height: 1.52;
+	/* Aucun rebond de fin de page : le match ne défile pas. */
+	overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--titre);
+	font-weight: 700;
+	margin: 0;
+}
+
+p {
+	margin: 0;
+}
+
+ul,
+ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+button {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: none;
+	border-radius: var(--rayon);
+	cursor: pointer;
+}
+
+:focus-visible {
+	outline: 2px solid var(--craie);
+	outline-offset: 2px;
+}
+
+/* ── Cadre : le desktop est le mobile dans un cadre ───────────────────────── */
+
+.cadre {
+	max-width: var(--cadre);
+	min-height: 100dvh;
+	margin: 0 auto;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background: var(--noir-vestiaire);
+}
+
+/* ── Papier ───────────────────────────────────────────────────────────────── */
+
+/*
+ * Une seule texture dans tout le jeu : un grain fin en bruit SVG, 3 %,
+ * appliqué au papier. Inline, sous 400 octets.
+ */
+.papier {
+	position: relative;
+	background-color: var(--papier);
+	color: var(--encre);
+	border-radius: var(--rayon);
+}
+
+.papier::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0.03;
+	border-radius: inherit;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* ── Typographie utilitaire ───────────────────────────────────────────────── */
+
+.mono {
+	font-family: var(--interface);
+	font-size: 12px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.titre-section {
+	font-family: var(--titre);
+	font-stretch: 78%;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+/* ── Boutons ──────────────────────────────────────────────────────────────── */
+
+/* Le bouton primaire est du papier sur du noir. Il n'y a pas de couleur
+   d'accent d'interface, et c'est ce qui empêche le rendu « SaaS ». */
+.bouton-primaire {
+	display: block;
+	width: 100%;
+	min-height: 56px;
+	background: var(--papier);
+	color: var(--encre);
+	font-family: var(--interface);
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	transition: transform var(--d-bouton) ease-out;
+}
+
+.bouton-secondaire {
+	display: block;
+	width: 100%;
+	min-height: 48px;
+	background: none;
+	color: var(--craie);
+	border: 1px solid var(--craie-pale);
+	border-radius: var(--rayon);
+	font-family: var(--interface);
+	font-size: 13px;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: transform var(--d-bouton) ease-out;
+}
+
+.bouton-tertiaire {
+	background: none;
+	color: var(--craie-pale);
+	font-family: var(--interface);
+	font-size: 14px;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.bouton-primaire:active,
+.bouton-secondaire:active {
+	transform: scale(0.985);
+}

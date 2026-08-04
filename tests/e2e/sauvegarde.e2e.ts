@@ -99,5 +99,5 @@ test('le jeu reste jouable quand localStorage est indisponible', async ({ page }
 	await jouerUnMatch(page);
 
 	// La note est bien là : seule la progression est perdue, pas la partie.
-	await expect(page.locator('p strong').first()).toBeVisible();
+	await expect(page.locator('[data-note]').first()).toBeVisible();
 });

@@ -33,6 +33,9 @@
 	let restantMs = $state(untrack(() => dureeMs));
 	let enLecture = $state(untrack(() => lectureMs > 0));
 
+	let largeur = $state(0);
+	let hauteur = $state(0);
+
 	const fraction = $derived(dureeMs === 0 ? 0 : Math.max(0, Math.min(1, restantMs / dureeMs)));
 
 	$effect(() => {
@@ -99,36 +102,80 @@
 </script>
 
 <!--
-	Pas de compteur de chiffres : on ne veut pas que le joueur regarde le chrono,
-	on veut qu'il le sente. L'habillage définitif vient en V0-11.
+	Un anneau de 3 px qui suit le périmètre intérieur de l'écran et se vide dans
+	le sens horaire depuis le haut (06 §6.2). Pas de compteur de chiffres : on ne
+	veut pas que le joueur regarde le chrono, on veut qu'il le sente.
 	Les attributs data- servent aux tests, et ne coûtent rien.
 -->
-<div
-	class="chrono"
-	class:lecture={enLecture}
-	data-restant-ms={Math.round(restantMs)}
-	data-phase={enLecture ? 'lecture' : 'decision'}
-	aria-hidden="true"
-	style="--fraction: {fraction}"
-></div>
+<!--
+	Le viewBox suit les dimensions réelles du cadre : un viewBox carré étiré
+	déformerait les tirets et l'anneau sortirait en morceaux.
+-->
+<div class="cadre-anneau" bind:clientWidth={largeur} bind:clientHeight={hauteur}>
+	{#if largeur > 0 && hauteur > 0}
+		<svg
+			class="anneau"
+			class:lecture={enLecture}
+			class:urgence={!enLecture && fraction <= 0.25}
+			data-restant-ms={Math.round(restantMs)}
+			data-phase={enLecture ? 'lecture' : 'decision'}
+			aria-hidden="true"
+			viewBox="0 0 {largeur} {hauteur}"
+			width={largeur}
+			height={hauteur}
+		>
+			<!--
+				pathLength normalise le périmètre à 100 quelle que soit la taille de
+				l'écran : le dasharray se raisonne alors en pourcentage. Le tracé part
+				du haut au centre et tourne dans le sens horaire.
+			-->
+			<path
+				class="trait"
+				pathLength="100"
+				d="M {largeur / 2} 1.5 H {largeur - 1.5} V {hauteur - 1.5} H 1.5 V 1.5 Z"
+				style="stroke-dasharray: {(fraction * 100).toFixed(3)} 100"
+			/>
+		</svg>
+	{/if}
+</div>
 
 <style>
-	.chrono {
-		height: 4px;
+	/*
+	 * Décalé de 4 px du haut : la jauge de contrôle occupe la ligne 0 (06 §6.2),
+	 * et l'anneau suit le périmètre *intérieur*. Sans ce décalage, l'anneau
+	 * passerait par-dessus la jauge et la masquerait.
+	 */
+	.cadre-anneau {
+		position: fixed;
+		inset: 4px 0 0;
 		width: 100%;
-		background: #ddd;
+		max-width: var(--cadre);
+		height: calc(100dvh - 4px);
+		margin: 0 auto;
+		pointer-events: none;
+		z-index: 2;
 	}
 
-	.chrono::before {
-		content: '';
+	.anneau {
 		display: block;
-		height: 100%;
-		width: calc(var(--fraction) * 100%);
-		background: #333;
 	}
 
-	/* Pendant la lecture, l'anneau est plein et neutre : rien ne presse encore. */
-	.chrono.lecture::before {
-		background: #999;
+	.trait {
+		fill: none;
+		stroke: var(--craie-pale);
+		stroke-width: 3;
+		/* linear strictement : toute autre courbe est un mensonge (06 §5). */
+		transition: stroke-dasharray 100ms linear;
+	}
+
+	/* Pendant la lecture, l'anneau est plein et discret : rien ne presse encore. */
+	.anneau.lecture .trait {
+		stroke: var(--craie-pale);
+		opacity: 0.45;
+	}
+
+	/* Sur les 25 derniers pourcents, il passe au rouge (06 §6.2). */
+	.anneau.urgence .trait {
+		stroke: var(--rouge-carton);
 	}
 </style>

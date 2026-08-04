@@ -23,13 +23,12 @@ test("coup d'envoi, douze décisions, une note", async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('button', { name: "COUP D'ENVOI" }).click();
 
-	await expect(page.getByText(/Contrôle : \d+ \/ 100/)).toBeVisible();
+	await expect(page.locator('[data-controle]')).toBeVisible();
 	await jouerJusquALaFeuille(page);
 
-	const note = page.locator('p strong').first();
+	const note = page.locator('[data-note]').first();
 	await expect(note).toBeVisible();
-	const texte = (await note.textContent()) ?? '';
-	const valeur = Number(texte.split('/')[0]?.trim());
+	const valeur = Number(await note.getAttribute('data-note'));
 	expect(Number.isInteger(valeur)).toBe(true);
 	expect(valeur).toBeGreaterThanOrEqual(0);
 	expect(valeur).toBeLessThanOrEqual(100);
@@ -47,14 +46,17 @@ test('la jauge affichée est celle que calcule le moteur', async ({ page }) => {
 
 	await page.goto('/');
 	await page.getByRole('button', { name: 'le match du jour' }).click();
-	await expect(page.getByText(`Contrôle : ${match.controleDepart} / 100`)).toBeVisible();
+	// La jauge n'affiche plus de texte : elle porte sa valeur en attribut.
+	await expect(page.locator(`[data-controle="${match.controleDepart}"]`)).toBeVisible();
 
 	await page.locator('ul li button').first().click();
-	await expect(page.getByText(`Contrôle : ${attendu} / 100`)).toBeVisible();
+	await expect(page.locator(`[data-controle="${attendu}"]`)).toBeVisible();
 });
 
 test('le match du jour est jouable', async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('button', { name: 'le match du jour' }).click();
-	await expect(page.getByText(/incident 1 sur 12/)).toBeVisible();
+	// 06 §6.2 retire toute indication du type « 7/12 » : le joueur ne doit pas
+	// compter les incidents restants. On vérifie donc qu'un incident est jouable.
+	await expect(page.locator('ul li button').first()).toBeVisible();
 });

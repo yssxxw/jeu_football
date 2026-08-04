@@ -43,7 +43,7 @@
 		"ambigu": false,
 		"tendu": false,
 		"var_eligible": false,
-		"texte": "87ᵉ, Villebasse mène 1-0. La touche est pour eux à trente mètres de leur but. Le joueur ramasse le ballon, cherche un partenaire pendant huit secondes, le repose, va chercher une autre position. C'est la deuxième touche jouée de cette façon. Le banc adverse compte à voix haute et la tribune s'y met.",
+		"texte": "87e, Villebasse mène 1-0. La touche est pour eux à trente mètres de leur but. Le joueur ramasse le ballon, cherche un partenaire pendant huit secondes, le repose, va chercher une autre position. C'est la deuxième touche jouée de cette façon. Le banc adverse compte à voix haute et la tribune s'y met.",
 		"options": [
 			{
 				"libelle": "Laisser faire, ajouter du temps",
@@ -65,7 +65,7 @@
 				"severite": 2,
 				"justesse": 0.7,
 				"dControle": -2,
-				"consequence": "Le jaune à la 87ᵉ pour une touche. C'est défendable, et ça arrête tout de suite le procédé."
+				"consequence": "Le jaune à la 87e pour une touche. C'est défendable, et ça arrête tout de suite le procédé."
 			}
 		]
 	},
@@ -78,7 +78,7 @@
 		"ambigu": false,
 		"tendu": false,
 		"var_eligible": false,
-		"texte": "88ᵉ, Ashgrove mène 1-0 à l'extérieur. Leur gardien met neuf secondes à se relever d'une prise de balle qu'il n'a pas subie, replace ses gants, regarde le banc. C'est le troisième dégagement du même acabit en dix minutes. Vous l'avez déjà prévenu une fois, à la 76ᵉ, sans carton. Le kop d'en face compte à voix haute.",
+		"texte": "88e, Ashgrove mène 1-0 à l'extérieur. Leur gardien met neuf secondes à se relever d'une prise de balle qu'il n'a pas subie, replace ses gants, regarde le banc. C'est le troisième dégagement du même acabit en dix minutes. Vous l'avez déjà prévenu une fois, à la 76e, sans carton. Le kop d'en face compte à voix haute.",
 		"options": [
 			{
 				"libelle": "Ajouter du temps, ne rien dire",
